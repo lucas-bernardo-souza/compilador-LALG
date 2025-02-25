@@ -160,6 +160,11 @@ public class JMain extends javax.swing.JFrame {
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
         JTextArea textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
+        
+        // Criando o painel de numeração de linhas e adicionado ao JScrollPane
+        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textArea);
+        scrollPane.setRowHeaderView(painelNumeroLinhas);
+        
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
     }
