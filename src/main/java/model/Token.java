@@ -9,32 +9,32 @@ package model;
  * @author Bernardo
  */
 public class Token {
-    private String type;
-    private String value;
+    private String token;
+    private String lexema;
 
     public Token(String type, String value) {
-        this.type = type;
-        this.value = value;
+        this.token = type;
+        this.lexema = value;
     }
     
-    public String getType(){
-        return this.type;
+    public String getToken(){
+        return this.token;
     }
     
-    public void setType(String type){
-        this.type = type;
+    public void setToken(String type){
+        this.token = type;
     }
     
-    public String getValue(){
-        return this.value;
+    public String getLexema(){
+        return this.lexema;
     }
     
-    public void setValue(String value){
-        this.value = value;
+    public void setLexema(String value){
+        this.lexema = value;
     }
 
     @Override
     public String toString() {
-        return "(" + type + ", " + value + ")";
+        return "(" + token + ", " + lexema + ")";
     }
 }
