@@ -57,6 +57,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="An&#xe1;lise l&#xe9;xica"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemAnaliseLexicaActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  *
  * @author Bernardo
  */
-public class analisadorLexico {
+public class AnalisadorLexico {
        
     private static final String KEYWORDS = "\\b(if|else|while|for|return|int|float|char)\\b";
     private static final String IDENTIFIER = "[a-zA-Z_][a-zA-Z0-9_]*";

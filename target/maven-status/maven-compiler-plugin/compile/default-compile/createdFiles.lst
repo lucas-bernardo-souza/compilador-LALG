@@ -1,5 +1,8 @@
-view\JMain$2.class
+model\AnalisadorLexico.class
+model\Main.class
 view\PainelNumeroLinhas$1.class
 view\PainelNumeroLinhas.class
 view\JMain$1.class
+view\JMain$2.class
+model\Token.class
 view\JMain.class
