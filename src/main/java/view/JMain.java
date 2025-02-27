@@ -209,10 +209,11 @@ public class JMain extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
         String input = getTextoAbaAtiva();
+        System.out.println(input);
         List<Token> tokens = ControlAnalisadorLexico.tokenize(input);
         
         for(int i = 0; i < tokens.size(); i++){
-            tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(), 1, 2, 3);
+            tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(),tokens.get(i).getLinha() , tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
         }
         
         

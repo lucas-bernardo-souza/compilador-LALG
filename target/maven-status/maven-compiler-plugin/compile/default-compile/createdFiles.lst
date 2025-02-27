@@ -1,4 +1,4 @@
-view/TabelaLexemas$1.class
-controler/ControlAnalisadorLexico.class
-view/JMain$3.class
-view/TabelaLexemas.class
+view\TabelaLexemas$1.class
+view\TabelaLexemas.class
+view\JMain$3.class
+controler\ControlAnalisadorLexico.class

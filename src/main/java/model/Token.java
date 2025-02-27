@@ -11,10 +11,16 @@ package model;
 public class Token {
     private String token;
     private String lexema;
+    private int linha;
+    private int colunaInicial;
+    private int colunaFinal;
 
-    public Token(String type, String value) {
+    public Token(String type, String value, int linha, int colunaInicial, int colunaFinal) {
         this.token = type;
         this.lexema = value;
+        this.linha = linha;
+        this.colunaInicial = colunaInicial;
+        this.colunaFinal = colunaFinal;
     }
     
     public String getToken(){
@@ -31,6 +37,30 @@ public class Token {
     
     public void setLexema(String value){
         this.lexema = value;
+    }
+
+    public int getLinha() {
+        return linha;
+    }
+
+    public void setLinha(int linha) {
+        this.linha = linha;
+    }
+
+    public int getColunaInicial() {
+        return colunaInicial;
+    }
+
+    public void setColunaInicial(int colunaInicial) {
+        this.colunaInicial = colunaInicial;
+    }
+
+    public int getColunaFinal() {
+        return colunaFinal;
+    }
+
+    public void setColunaFinal(int colunaFinal) {
+        this.colunaFinal = colunaFinal;
     }
 
     @Override

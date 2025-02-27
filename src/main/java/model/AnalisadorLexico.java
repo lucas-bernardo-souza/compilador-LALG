@@ -5,7 +5,9 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,20 +30,56 @@ public class AnalisadorLexico {
     public static List<Token> tokenize(String input) {
         List<Token> tokens = new ArrayList<>();
         Matcher matcher = PATTERN.matcher(input);
-
-        while (matcher.find()) {
-            String token = matcher.group();
-            if (token.matches(KEYWORDS)) {
-                tokens.add(new Token("KEYWORD", token));
-            } else if (token.matches(IDENTIFIER)) {
-                tokens.add(new Token("IDENTIFIER", token));
-            } else if (token.matches(NUMBER)) {
-                tokens.add(new Token("NUMBER", token));
-            } else if (token.matches(OPERATOR)) {
-                tokens.add(new Token("OPERATOR", token));
-            } else if (token.matches(DELIMITER)) {
-                tokens.add(new Token("DELIMITER", token));
+        
+        int linha = 1;
+        int colunaAtual = 1;
+        Map<Integer, Integer> mapaLinhas = new HashMap<>();
+        int posicaoAtual = 0;
+        
+        for(int i = 0; i < input.length();i++){
+            if(input.charAt(i) == '\n'){
+                linha++;
+                mapaLinhas.put(linha, i+1); // proximo caracter comeca uma nova linha
             }
+        }
+        
+        linha = 1;
+        
+        while (matcher.find()) {
+            
+            String lexema = matcher.group();
+            int posicaoInicio = matcher.start();
+            int posicaoFim = matcher.end();
+            
+            // Atualiza a linha atual com base no mapa
+            for(Map.Entry<Integer, Integer> entry : mapaLinhas.entrySet()){
+                if(posicaoInicio >= entry.getValue()){
+                    linha = entry.getKey();
+                } else {
+                    break;
+                }
+            }
+            
+            
+            // Calcula a coluna inicial
+            int colInicio = posicaoInicio - mapaLinhas.getOrDefault(linha, 0) + 1;
+            int colFinal = posicaoFim - mapaLinhas.getOrDefault(linha, 0) + 1;
+            String tipo;
+            if (lexema.matches(KEYWORDS)) {
+                tipo = "KEYWORD";
+            } else if (lexema.matches(IDENTIFIER)) {
+                tipo = "IDENTIFIER";
+            } else if (lexema.matches(NUMBER)) {
+                tipo = "NUMBER";
+            } else if (lexema.matches(OPERATOR)) {
+                tipo = "OPERATOR";
+            } else if (lexema.matches(DELIMITER)) {
+                tipo = "DELIMITER";
+            } else{
+                tipo = "UNKNOWN";
+            }
+            
+            tokens.add(new Token(tipo, lexema, linha, colInicio, colFinal));
         }
         tokens.forEach(System.out::println);
         return tokens;
