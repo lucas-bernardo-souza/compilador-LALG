@@ -5,6 +5,7 @@
 package view;
 
 import controler.ControlAnalisadorLexico;
+import controler.ControlArquivo;
 import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -106,6 +107,11 @@ public class JMain extends javax.swing.JFrame {
         jMenuArquivo.add(jMenuItemNovoArquivo);
 
         jMenuItemAbrirArquivo.setText("Abrir arquivo");
+        jMenuItemAbrirArquivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAbrirArquivoActionPerformed(evt);
+            }
+        });
         jMenuArquivo.add(jMenuItemAbrirArquivo);
         jMenuArquivo.add(jSeparator1);
 
@@ -113,6 +119,11 @@ public class JMain extends javax.swing.JFrame {
         jMenuArquivo.add(jMenuItemSalvarArquivo);
 
         jMenuItemSalvarArquivoComo.setText("Salvar arquivo como");
+        jMenuItemSalvarArquivoComo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSalvarArquivoComoActionPerformed(evt);
+            }
+        });
         jMenuArquivo.add(jMenuItemSalvarArquivoComo);
         jMenuArquivo.add(jSeparator2);
 
@@ -179,10 +190,37 @@ public class JMain extends javax.swing.JFrame {
         addTokensTabela();
     }//GEN-LAST:event_jMenuItemAnaliseLexicaActionPerformed
 
+    private void jMenuItemSalvarArquivoComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalvarArquivoComoActionPerformed
+        // TODO add your handling code here:
+        String conteudo = getTextoAbaAtiva();
+        ControlArquivo.salvarArquivo(conteudo);
+    }//GEN-LAST:event_jMenuItemSalvarArquivoComoActionPerformed
+
+    private void jMenuItemAbrirArquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAbrirArquivoActionPerformed
+        // TODO add your handling code here:
+        String texto = ControlArquivo.abrirArquivo();
+        criarNovoArquivo(texto);
+    }//GEN-LAST:event_jMenuItemAbrirArquivoActionPerformed
+
     private void criarNovoArquivo(){
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
         JTextArea textArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        
+        // Criando o painel de numeração de linhas e adicionado ao JScrollPane
+        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textArea);
+        scrollPane.setRowHeaderView(painelNumeroLinhas);
+        
+        String nomeAba = "Arquivo " + contadorArquivos++;
+        tabbedPane.addTab(nomeAba, scrollPane);
+    }
+    
+    private void criarNovoArquivo(String texto){
+        jPanelPrincipal.setLayout(new BorderLayout());
+        jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
+        JTextArea textArea = new JTextArea();
+        textArea.setText(texto);
         JScrollPane scrollPane = new JScrollPane(textArea);
         
         // Criando o painel de numeração de linhas e adicionado ao JScrollPane
