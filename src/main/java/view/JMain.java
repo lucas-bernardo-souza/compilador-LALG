@@ -4,9 +4,14 @@
  */
 package view;
 
+import controler.ControlAnalisadorLexico;
 import java.awt.BorderLayout;
+import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import model.Token;
 
 /**
  *
@@ -15,6 +20,7 @@ import javax.swing.JTextArea;
 public class JMain extends javax.swing.JFrame {
     private javax.swing.JTabbedPane tabbedPane;
     private int contadorArquivos = 1;
+    TabelaLexemas tabelaLexemas = new TabelaLexemas();
 
     /**
      * Creates new form JMain
@@ -60,7 +66,7 @@ public class JMain extends javax.swing.JFrame {
         );
         jPanelLogsCompilacaoLayout.setVerticalGroup(
             jPanelLogsCompilacaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 87, Short.MAX_VALUE)
+            .addGap(0, 166, Short.MAX_VALUE)
         );
 
         jTabbedPainelDeSaida.addTab("Logs de compilação", jPanelLogsCompilacao);
@@ -73,7 +79,7 @@ public class JMain extends javax.swing.JFrame {
         );
         jPanelTabelaLexemasLayout.setVerticalGroup(
             jPanelTabelaLexemasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 87, Short.MAX_VALUE)
+            .addGap(0, 166, Short.MAX_VALUE)
         );
 
         jTabbedPainelDeSaida.addTab("Tabela de lexemas", jPanelTabelaLexemas);
@@ -86,7 +92,7 @@ public class JMain extends javax.swing.JFrame {
         );
         jPanelPrincipalLayout.setVerticalGroup(
             jPanelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 411, Short.MAX_VALUE)
+            .addGap(0, 332, Short.MAX_VALUE)
         );
 
         jMenuArquivo.setText("Arquivo");
@@ -121,6 +127,11 @@ public class JMain extends javax.swing.JFrame {
         jMenuCompilar.setText("Compilar");
 
         jMenuItemAnaliseLexica.setText("Análise léxica");
+        jMenuItemAnaliseLexica.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAnaliseLexicaActionPerformed(evt);
+            }
+        });
         jMenuCompilar.add(jMenuItemAnaliseLexica);
 
         jMenuBar1.add(jMenuCompilar);
@@ -139,7 +150,7 @@ public class JMain extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanelPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPainelDeSaida, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jTabbedPainelDeSaida, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -155,6 +166,19 @@ public class JMain extends javax.swing.JFrame {
         criarNovoArquivo();
     }//GEN-LAST:event_jMenuItemNovoArquivoActionPerformed
 
+    private void jMenuItemAnaliseLexicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAnaliseLexicaActionPerformed
+        // TODO add your handling code here:
+        tabelaLexemas.limpaTabela();
+        // criando a tabela de lexemas
+        JTable tabela = tabelaLexemas.tabelaLexemas();
+        JScrollPane scrollPane = new JScrollPane(tabela);
+        jPanelTabelaLexemas.setLayout(new BorderLayout());
+        jPanelTabelaLexemas.add(scrollPane, BorderLayout.CENTER);
+        // Exibindo a tabela
+        jTabbedPainelDeSaida.add("Tabela de lexemas",jPanelTabelaLexemas);
+        addTokensTabela();
+    }//GEN-LAST:event_jMenuItemAnaliseLexicaActionPerformed
+
     private void criarNovoArquivo(){
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
@@ -168,6 +192,34 @@ public class JMain extends javax.swing.JFrame {
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
     }
+    
+    private String getTextoAbaAtiva(){
+        int abaSelecionada = tabbedPane.getSelectedIndex();
+        
+        if(abaSelecionada != -1){
+            JScrollPane scrollPane = (JScrollPane) tabbedPane.getComponentAt(abaSelecionada);
+            JTextArea textArea = (JTextArea) scrollPane.getViewport().getView();
+            return textArea.getText();
+        }
+        return null;
+    }
+    
+    private void addTokensTabela(){
+        if(getTextoAbaAtiva() == null){
+            JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        String input = getTextoAbaAtiva();
+        System.out.println(input);
+        List<Token> tokens = ControlAnalisadorLexico.tokenize(input);
+        
+        for(int i = 0; i < tokens.size(); i++){
+            tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(),tokens.get(i).getLinha() , tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
+        }
+        
+        
+    }
+    
+    
     
     /**
      * @param args the command line arguments
