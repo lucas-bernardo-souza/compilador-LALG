@@ -26,4 +26,8 @@ public class ControlAnalisadorLexico {
         tokens = analisador.tokenize(input);
         return tokens;
     }
+    
+    public static String analiseLexica(List<Token> tokens){
+        return analisador.analiseLexica(tokens);
+    }
 }
