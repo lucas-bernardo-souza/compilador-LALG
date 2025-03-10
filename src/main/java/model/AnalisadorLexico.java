@@ -19,12 +19,18 @@ public class AnalisadorLexico {
        
     private static final String KEYWORDS = "\\b(if|else|while|for|return|int|float|char)\\b";
     private static final String IDENTIFIER = "[a-zA-Z_][a-zA-Z0-9_]*";
-    private static final String NUMBER = "\\d+([.,]\\d+)?";
-    private static final String OPERATOR = "[+\\-*/=<>!]";
+    private static final String NUMBER = "-?\\d*\\.\\d+";
+    private static final String NUMBERINT = "-?\\d+";
+//    private static final String OPERATOR = "[+\\-*/=<>!]";
+    private static final String OPERADORSOMA = "\\+";
+    private static final String OPERADORSUBTRACAO = "\\-";
+    private static final String OPERADORDIVISAO = "\\/";
+    private static final String OPERADORMULTIPLICACAO = "\\*";
     private static final String DELIMITER = "[()]";
     
     private static final Pattern PATTERN = Pattern.compile(
-        KEYWORDS + "|" + IDENTIFIER + "|" + NUMBER + "|" + OPERATOR + "|" + DELIMITER
+        KEYWORDS + "|" + IDENTIFIER + "|" + NUMBER + "|" + OPERADORSOMA +"|" + OPERADORSUBTRACAO + "|" +
+                OPERADORDIVISAO + "|" + OPERADORMULTIPLICACAO + "|" + DELIMITER + "|" + NUMBERINT
     );
 
     public static List<Token> tokenize(String input) {
@@ -63,9 +69,17 @@ public class AnalisadorLexico {
             int colFinal = posicaoFim - mapaLinhas.getOrDefault(linha, 0) + 1;
             String tipo;
             if (lexema.matches(NUMBER)) {
-                tipo = "NUMBER";
-            } else if (lexema.matches(OPERATOR)) {
-                tipo = "OPERATOR";
+                tipo = "NÚMERO REAL";
+            } else if(lexema.matches(NUMBERINT)){
+                tipo = "NÚMERO INTEIRO";
+            } else if (lexema.matches(OPERADORSOMA)) {
+                tipo = "OPERADOR DE SOMA";
+            } else if(lexema.matches(OPERADORSUBTRACAO)){
+                tipo = "OPERADOR DE SUBTRAÇÃO";
+            } else if(lexema.matches(OPERADORMULTIPLICACAO)){
+                tipo = "OPERADOR DE MULTIPLICAÇÃO";
+            } else if(lexema.matches(OPERADORDIVISAO)){
+                tipo = "OPERADOR DE DIVISÃO";
             } else if (lexema.matches(DELIMITER)) {
                 tipo = "DELIMITER";
             } else{
