@@ -19,9 +19,9 @@ public class AnalisadorLexico {
        
     private static final String KEYWORDS = "\\b(if|else|while|for|return|int|float|char)\\b";
     private static final String IDENTIFIER = "[a-zA-Z_][a-zA-Z0-9_]*";
-    private static final String NUMBER = "\\d+(\\.\\d+)?";
+    private static final String NUMBER = "\\d+([.,]\\d+)?";
     private static final String OPERATOR = "[+\\-*/=<>!]";
-    private static final String DELIMITER = "[(){};]";
+    private static final String DELIMITER = "[()]";
     
     private static final Pattern PATTERN = Pattern.compile(
         KEYWORDS + "|" + IDENTIFIER + "|" + NUMBER + "|" + OPERATOR + "|" + DELIMITER
@@ -32,9 +32,7 @@ public class AnalisadorLexico {
         Matcher matcher = PATTERN.matcher(input);
         
         int linha = 1;
-        int colunaAtual = 1;
         Map<Integer, Integer> mapaLinhas = new HashMap<>();
-        int posicaoAtual = 0;
         
         for(int i = 0; i < input.length();i++){
             if(input.charAt(i) == '\n'){
@@ -60,16 +58,11 @@ public class AnalisadorLexico {
                 }
             }
             
-            
             // Calcula a coluna inicial
             int colInicio = posicaoInicio - mapaLinhas.getOrDefault(linha, 0) + 1;
             int colFinal = posicaoFim - mapaLinhas.getOrDefault(linha, 0) + 1;
             String tipo;
-            if (lexema.matches(KEYWORDS)) {
-                tipo = "KEYWORD";
-            } else if (lexema.matches(IDENTIFIER)) {
-                tipo = "IDENTIFIER";
-            } else if (lexema.matches(NUMBER)) {
+            if (lexema.matches(NUMBER)) {
                 tipo = "NUMBER";
             } else if (lexema.matches(OPERATOR)) {
                 tipo = "OPERATOR";
@@ -83,5 +76,31 @@ public class AnalisadorLexico {
         }
         tokens.forEach(System.out::println);
         return tokens;
+    }
+    
+    public static String analiseLexica(List<Token> tokens){
+        for(Token token : tokens){
+            System.out.println(token.getToken());
+            if("UNKNOWN".equals(token.getToken())){
+                return "Erro léxico encontrado na linha: " 
+                        + token.getLinha() + " e coluna: "
+                        + token.getColunaInicial() + "."
+                        + "\n" 
+                        + "O caracter: " + token.getLexema()
+                        + ", não pertence ao alfabeto da linguagem.";
+            }
+            if("NUMBER".equals(token.getToken())){
+                String lexema = token.getLexema();
+                if(lexema.contains("..") || lexema.contains(",")){
+                    return "Erro léxico encontrado na linha: "
+                            + token.getLinha() + "e coluna: "
+                            + token.getColunaInicial() + "."
+                            + "\n"
+                            + "O número real: " + token.getLexema()
+                            + ", foi mal formulado.";
+                }
+            }
+        }
+        return "Nenhum erro léxico encontrado";
     }
 }

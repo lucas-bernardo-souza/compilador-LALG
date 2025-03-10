@@ -187,7 +187,12 @@ public class JMain extends javax.swing.JFrame {
         jPanelTabelaLexemas.add(scrollPane, BorderLayout.CENTER);
         // Exibindo a tabela
         jTabbedPainelDeSaida.add("Tabela de lexemas",jPanelTabelaLexemas);
-        addTokensTabela();
+        // Criando lista de tokens
+        String input = getTextoAbaAtiva();
+        List<Token> tokens = ControlAnalisadorLexico.tokenize(input);
+        
+        addTokensTabela(tokens);
+        analiseLexica(tokens);
     }//GEN-LAST:event_jMenuItemAnaliseLexicaActionPerformed
 
     private void jMenuItemSalvarArquivoComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalvarArquivoComoActionPerformed
@@ -242,19 +247,26 @@ public class JMain extends javax.swing.JFrame {
         return null;
     }
     
-    private void addTokensTabela(){
+    private void analiseLexica(List<Token> tokens){
+        String output = ControlAnalisadorLexico.analiseLexica(tokens);
+        JTextArea textArea = new JTextArea();
+        textArea.setText(output);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        jPanelLogsCompilacao.setLayout(new BorderLayout());
+        jPanelLogsCompilacao.add(scrollPane, BorderLayout.CENTER);
+        jTabbedPainelDeSaida.add("Logs de compilação",jPanelLogsCompilacao);
+        
+    }
+    
+    private void addTokensTabela(List<Token> tokens){
         if(getTextoAbaAtiva() == null){
             JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        String input = getTextoAbaAtiva();
-        System.out.println(input);
-        List<Token> tokens = ControlAnalisadorLexico.tokenize(input);
+        
         
         for(int i = 0; i < tokens.size(); i++){
             tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(),tokens.get(i).getLinha() , tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
-        }
-        
-        
+        } 
     }
     
     
