@@ -17,20 +17,45 @@ import java.util.regex.Pattern;
  */
 public class AnalisadorLexico {
        
-    private static final String KEYWORDS = "\\b(if|else|while|for|return|int|float|char)\\b";
-    private static final String IDENTIFIER = "[a-zA-Z_][a-zA-Z0-9_]*";
-    private static final String NUMBER = "-?\\d*\\.\\d+";
-    private static final String NUMBERINT = "-?\\d+";
-    private static final String OPERADORSOMA = "\\+";
-    private static final String OPERADORSUBTRACAO = "\\-";
-    private static final String OPERADORDIVISAO = "\\/";
-    private static final String OPERADORMULTIPLICACAO = "\\*";
-    private static final String DELIMITER = "[()]";
+    //private static final String KEYWORDS = "\\b(if|else|while|for|return|int|float|char)\\b";
+    //private static final String NUMBER = "-?\\d*\\.\\d+";
+    //private static final String DELIMITER = "[()]";
+    private static final String palavraReservadaBegin = "\\b(begin)\\b";
+    private static final String palavraReservadaEnd = "\\b(end)\\b";
+    private static final String palavraReservadaIf = "\\b(if)\\b";
+    private static final String palavraReservadaThen = "\\b(then)\\b";
+    private static final String palavraReservadaElse = "\\b (else)\\b";
+    private static final String palavraReservadaWhile = "\\b(while)\\b";
+    private static final String palavraReservadaDo = "\\b(do)\\b";
+    
+    private static final String sinalIgualdade = "\\=";
+    private static final String sinalMaior = "\\>";
+    private static final String sinalMenor = "\\<";
+    private static final String sinalDiferente = "\\<>";
+    private static final String sinalMenorIgual = "\\<=";
+    private static final String sinalMaiorIgual = "\\>=";
+    private static final String operadorSoma = "\\+";
+    private static final String operadorSubtracao = "\\-";
+    private static final String operadorMultiplicacao = "\\*";
+    private static final String operadorDivisao = "\\b(div)\\b";
+    private static final String operadorLogicoOr = "\\b(or)\\b";
+    private static final String operadorLogicoAnd = "\\b(and)\\b";
+    private static final String operadorLogicoNot = "\\b(not)\\b";
+    
+    private static final String numeroInteiro = "-?\\d+";
+    
+    private static final String identificador = "[a-zA-Z_][a-zA-Z0-9_]*";
+    
     private static List<String> fonte;
     
     private static final Pattern PATTERN = Pattern.compile(
-        KEYWORDS + "|" + IDENTIFIER + "|" + NUMBER + "|" + OPERADORSOMA +"|" + OPERADORSUBTRACAO + "|" +
-                OPERADORDIVISAO + "|" + OPERADORMULTIPLICACAO + "|" + DELIMITER + "|" + NUMBERINT
+        palavraReservadaBegin + "|" + palavraReservadaEnd + "|" + palavraReservadaIf + "|" + 
+                palavraReservadaThen + "|" + palavraReservadaElse + "|" + palavraReservadaWhile + "|" +
+                palavraReservadaDo + "|" + sinalIgualdade + "|" + sinalMaior + "|" + sinalMenor + "|" +
+                sinalDiferente + "|" + sinalMenorIgual + "|" + sinalMaiorIgual + "|" + operadorSoma + "|" +
+                operadorSubtracao + "|" + operadorMultiplicacao + "|" + operadorDivisao + "|" +
+                operadorLogicoOr + "|" + operadorLogicoAnd + "|" + operadorLogicoNot + "|" + identificador + "|" +
+                numeroInteiro
     );
     
     public static List<String> eliminaComentarios(String fonte){
@@ -118,21 +143,52 @@ public class AnalisadorLexico {
             int colInicio = posicaoInicio - mapaLinhas.getOrDefault(linha, 0) + 1;
             int colFinal = posicaoFim - mapaLinhas.getOrDefault(linha, 0) + 1;
             String tipo;
-            if (lexema.matches(NUMBER)) {
-                tipo = "NÚMERO REAL";
-            } else if(lexema.matches(NUMBERINT)){
-                tipo = "NÚMERO INTEIRO";
-            } else if (lexema.matches(OPERADORSOMA)) {
+            if (lexema.matches(palavraReservadaBegin)) {
+                tipo = "PALAVRA RESERVADA 'BEGIN'";
+            } else if(lexema.matches(palavraReservadaEnd)){
+                tipo = "PALAVRA RESERVADA 'END'";
+            } else if(lexema.matches(palavraReservadaIf)){
+                tipo = "PALAVRA RESERVADA 'IF'";
+            } else if(lexema.matches(palavraReservadaThen)){
+                tipo = "PALAVRA RESERVADA 'THEN'";
+            } else if(lexema.matches(palavraReservadaElse)){
+                tipo = "PALAVRA RESERVADA 'ELSE'";
+            } else if(lexema.matches(palavraReservadaWhile)){
+                tipo = "PALAVRA RESERVADA 'WHILE'";
+            } else if(lexema.matches(palavraReservadaDo)){
+                tipo = "PALAVRA RESERVADA 'DO'";
+            } else if(lexema.matches(sinalIgualdade)){
+                tipo = "SINAL DE IGUALDADE";
+            } else if(lexema.matches(sinalMaior)){
+                tipo = "SINAL DE MAIOR";
+            } else if(lexema.matches(sinalMenor)){
+                tipo = "SINAL DE MENOR";
+            } else if(lexema.matches(sinalDiferente)){
+                tipo = "SINAL DE DIFERENTE";
+            } else if(lexema.matches(sinalMenorIgual)){
+                tipo = "SINAL DE MENOR IGUAL";
+            } else if(lexema.matches(sinalMaiorIgual)){
+                tipo = "SINAL DE MAIOR IGUAL";
+            } else if(lexema.matches(operadorSoma)){
                 tipo = "OPERADOR DE SOMA";
-            } else if(lexema.matches(OPERADORSUBTRACAO)){
-                tipo = "OPERADOR DE SUBTRAÇÃO";
-            } else if(lexema.matches(OPERADORMULTIPLICACAO)){
-                tipo = "OPERADOR DE MULTIPLICAÇÃO";
-            } else if(lexema.matches(OPERADORDIVISAO)){
-                tipo = "OPERADOR DE DIVISÃO";
-            } else if (lexema.matches(DELIMITER)) {
-                tipo = "DELIMITER";
-            } else{
+            } else if(lexema.matches(operadorSubtracao)){
+                tipo = "OPERADOR DE SUBTRACAO";
+            } else if(lexema.matches(operadorMultiplicacao)){
+                tipo = "OPERADOR DE MULTIPLICACAO";
+            } else if(lexema.matches(operadorDivisao)){
+                tipo = "OPERADOR DE DIVISAO";
+            } else if(lexema.matches(operadorLogicoOr)){
+                tipo = "OPERADOR LOGICO 'OR'";
+            } else if(lexema.matches(operadorLogicoAnd)){
+                tipo = "OPERADOR LOGICO 'AND'";
+            } else if(lexema.matches(operadorLogicoNot)){
+                tipo = "OPERADOR LOGICO NOT";
+            } else if(lexema.matches(numeroInteiro)){
+                tipo = "NUMERO INTEIRO";
+            } else if(lexema.matches(identificador)){
+                tipo = "IDENTIFICADOR";
+            }
+            else{
                 tipo = "UNKNOWN";
             }
             
