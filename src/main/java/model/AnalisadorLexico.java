@@ -21,19 +21,69 @@ public class AnalisadorLexico {
     private static final String IDENTIFIER = "[a-zA-Z_][a-zA-Z0-9_]*";
     private static final String NUMBER = "-?\\d*\\.\\d+";
     private static final String NUMBERINT = "-?\\d+";
-//    private static final String OPERATOR = "[+\\-*/=<>!]";
     private static final String OPERADORSOMA = "\\+";
     private static final String OPERADORSUBTRACAO = "\\-";
     private static final String OPERADORDIVISAO = "\\/";
     private static final String OPERADORMULTIPLICACAO = "\\*";
     private static final String DELIMITER = "[()]";
+    private static List<String> fonte;
     
     private static final Pattern PATTERN = Pattern.compile(
         KEYWORDS + "|" + IDENTIFIER + "|" + NUMBER + "|" + OPERADORSOMA +"|" + OPERADORSUBTRACAO + "|" +
                 OPERADORDIVISAO + "|" + OPERADORMULTIPLICACAO + "|" + DELIMITER + "|" + NUMBERINT
     );
+    
+    public static List<String> eliminaComentarios(String fonte){
+        List<String> resultado = new ArrayList<>();
+        
+        // remover coment´rios de linha
+        StringBuilder filtrado = new StringBuilder();
+        String[] linhas = fonte.split("\n");
+        for(String linha : linhas){
+            int indiceComentario = linha.indexOf("//");
+            if(indiceComentario != -1){
+                linha = linha.substring(0, indiceComentario);
+            }
+            filtrado.append(linha).append("\n");
+        }
+        
+        String temp = filtrado.toString();
+        StringBuilder resultadoFinal = new StringBuilder();
+        
+        // Remover texto entre chaves {}
+        int abreChaves = temp.indexOf('{');
+        int fechaChaves = temp.lastIndexOf('}');
+        
+        if(abreChaves != -1 && fechaChaves == -1){
+            resultado.add("ERRO");
+            resultado.add(fonte);
+            return resultado;
+        }
+        
+        boolean dentroDeChaves = false;
+        for(char c : temp.toCharArray()){
+            if(c == '{'){
+                dentroDeChaves = true;
+            } else if (c == '}'){
+                dentroDeChaves = false;
+            } else if(!dentroDeChaves){
+                resultadoFinal.append(c);
+            }
+        }
+        
+        resultado.add("SUCESSO");
+        resultado.add(resultadoFinal.toString().trim());
+        return resultado;
+    }
 
-    public static List<Token> tokenize(String input) {
+    public static List<Token> tokenize(String codFonte) {
+        AnalisadorLexico.fonte = eliminaComentarios(codFonte);
+        if("ERRO".equals(fonte.get(0))){
+            return null;
+        }
+        
+        String input = fonte.get(1);
+        
         List<Token> tokens = new ArrayList<>();
         Matcher matcher = PATTERN.matcher(input);
         
