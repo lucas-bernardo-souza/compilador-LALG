@@ -29,6 +29,10 @@ public class ControlAnalisadorLexico {
         return tokens;
     }
     
+    public List<Erro> getErros(){
+        return erros;
+    }
+    
     public void analiseLexica(String codFonte){
         String codigoSemComentarios = eliminaComentarios(codFonte);
         tokens = tokenize(codigoSemComentarios);
