@@ -58,8 +58,7 @@ public class AnalisadorLexico {
                 numeroInteiro
     );
     
-    public static List<String> eliminaComentarios(String fonte){
-        List<String> resultado = new ArrayList<>();
+    public static String eliminaComentarios(String fonte, Erro erroEncontrado){
         
         // remover coment´rios de linha
         StringBuilder filtrado = new StringBuilder();
@@ -80,9 +79,12 @@ public class AnalisadorLexico {
         int fechaChaves = temp.lastIndexOf('}');
         
         if(abreChaves != -1 && fechaChaves == -1){
-            resultado.add("ERRO");
-            resultado.add(fonte);
-            return resultado;
+            erroEncontrado.setNome("Comentário sem fechamento");
+            erroEncontrado.setFase("Léxica");
+            erroEncontrado.setDescricao("Não foi possível encontrar o final do arquivo");
+            erroEncontrado.setLinha(abreChaves);
+            erroEncontrado.setColuna(0);
+            return fonte;
         }
         
         boolean dentroDeChaves = false;
@@ -96,27 +98,20 @@ public class AnalisadorLexico {
             }
         }
         
-        resultado.add("SUCESSO");
-        resultado.add(resultadoFinal.toString().trim());
-        return resultado;
+        
+        return resultadoFinal.toString().trim();
+        
     }
 
     public static List<Token> tokenize(String codFonte) {
-        AnalisadorLexico.fonte = eliminaComentarios(codFonte);
-        if("ERRO".equals(fonte.get(0))){
-            return null;
-        }
-        
-        String input = fonte.get(1);
-        
         List<Token> tokens = new ArrayList<>();
-        Matcher matcher = PATTERN.matcher(input);
+        Matcher matcher = PATTERN.matcher(codFonte);
         
         int linha = 1;
         Map<Integer, Integer> mapaLinhas = new HashMap<>();
         
-        for(int i = 0; i < input.length();i++){
-            if(input.charAt(i) == '\n'){
+        for(int i = 0; i < codFonte.length();i++){
+            if(codFonte.charAt(i) == '\n'){
                 linha++;
                 mapaLinhas.put(linha, i+1); // proximo caracter comeca uma nova linha
             }
@@ -198,29 +193,26 @@ public class AnalisadorLexico {
         return tokens;
     }
     
-    public static String analiseLexica(List<Token> tokens){
+    public static List<Erro> buscaErrosLexicos(List<Token> tokens){
+        List<Erro> errosEncontrados = new ArrayList<>();
         for(Token token : tokens){
             System.out.println(token.getToken());
             if("UNKNOWN".equals(token.getToken())){
-                return "Erro léxico encontrado na linha: " 
-                        + token.getLinha() + " e coluna: "
-                        + token.getColunaInicial() + "."
-                        + "\n" 
-                        + "O caracter: " + token.getLexema()
-                        + ", não pertence ao alfabeto da linguagem.";
+                Erro erroAlfabeto = new Erro("Caracter fora do alfabeto", "Léxica", 
+                        "O caracter: " + token.getLexema()+ ", não pertence ao alfabeto da linguagem.",
+                        token.getLinha(), token.getColunaInicial());
+                errosEncontrados.add(erroAlfabeto);
             }
             if("NUMBER".equals(token.getToken())){
                 String lexema = token.getLexema();
                 if(lexema.contains("..") || lexema.contains(",")){
-                    return "Erro léxico encontrado na linha: "
-                            + token.getLinha() + "e coluna: "
-                            + token.getColunaInicial() + "."
-                            + "\n"
-                            + "O número real: " + token.getLexema()
-                            + ", foi mal formulado.";
+                    Erro erroNumero = new Erro("Numero mal formado", "Léxica",
+                            "O número real: " + token.getLexema()+ ", foi mal formulado.",
+                            token.getLinha(), token.getColunaInicial());
+                    errosEncontrados.add(erroNumero);
                 }
             }
         }
-        return "Nenhum erro léxico encontrado";
+        return errosEncontrados;
     }
 }

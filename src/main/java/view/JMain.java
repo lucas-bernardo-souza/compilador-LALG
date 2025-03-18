@@ -22,6 +22,7 @@ public class JMain extends javax.swing.JFrame {
     private javax.swing.JTabbedPane tabbedPane;
     private int contadorArquivos = 1;
     TabelaLexemas tabelaLexemas = new TabelaLexemas();
+    ControlAnalisadorLexico analisadorLexico = new ControlAnalisadorLexico();
 
     /**
      * Creates new form JMain
@@ -179,20 +180,14 @@ public class JMain extends javax.swing.JFrame {
 
     private void jMenuItemAnaliseLexicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAnaliseLexicaActionPerformed
         // TODO add your handling code here:
-        tabelaLexemas.limpaTabela();
-        // criando a tabela de lexemas
-        JTable tabela = tabelaLexemas.tabelaLexemas();
-        JScrollPane scrollPane = new JScrollPane(tabela);
-        jPanelTabelaLexemas.setLayout(new BorderLayout());
-        jPanelTabelaLexemas.add(scrollPane, BorderLayout.CENTER);
-        // Exibindo a tabela
-        jTabbedPainelDeSaida.add("Tabela de lexemas",jPanelTabelaLexemas);
+        inicializaTabelaLexemas();
         // Criando lista de tokens
         String input = getTextoAbaAtiva();
-        List<Token> tokens = ControlAnalisadorLexico.tokenize(input);
+        analisadorLexico.analiseLexica(input);
         
-        addTokensTabela(tokens);
-        analiseLexica(tokens);
+        
+        addTokensTabela(analisadorLexico.getTokens());
+        
     }//GEN-LAST:event_jMenuItemAnaliseLexicaActionPerformed
 
     private void jMenuItemSalvarArquivoComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalvarArquivoComoActionPerformed
@@ -207,6 +202,17 @@ public class JMain extends javax.swing.JFrame {
         criarNovoArquivo(texto);
     }//GEN-LAST:event_jMenuItemAbrirArquivoActionPerformed
 
+    private void inicializaTabelaLexemas(){
+        tabelaLexemas.limpaTabela();
+        // criando a tabela de lexemas
+        JTable tabela = tabelaLexemas.tabelaLexemas();
+        JScrollPane scrollPane = new JScrollPane(tabela);
+        jPanelTabelaLexemas.setLayout(new BorderLayout());
+        jPanelTabelaLexemas.add(scrollPane, BorderLayout.CENTER);
+        // Exibindo a tabela
+        jTabbedPainelDeSaida.add("Tabela de lexemas",jPanelTabelaLexemas);
+    }
+    
     private void criarNovoArquivo(){
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
