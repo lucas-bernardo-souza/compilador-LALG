@@ -20,6 +20,12 @@ public class AnalisadorLexico {
     //private static final String KEYWORDS = "\\b(if|else|while|for|return|int|float|char)\\b";
     //private static final String NUMBER = "-?\\d*\\.\\d+";
     //private static final String DELIMITER = "[()]";
+    private static final String finalDeComando = "\\;";
+    private static final String atribuicaDeVariavel = "\\:=";
+    
+    private static final String palavraReservadaProgram = "\\b(program)\\b";
+    private static final String palavraReservadaProcedure = "\\b(procedure)\\b";
+    private static final String palavraReservadaVar = "\\b(var)\\b";
     private static final String palavraReservadaBegin = "\\b(begin)\\b";
     private static final String palavraReservadaEnd = "\\b(end)\\b";
     private static final String palavraReservadaIf = "\\b(if)\\b";
@@ -46,6 +52,9 @@ public class AnalisadorLexico {
     
     private static final String identificador = "[a-zA-Z_][a-zA-Z0-9_]*";
     
+    private static final String tipoDeDadoInt = "\\b(int)\\b";
+    private static final String tipoDeDadoBoolean = "\\b(boolean)\\b";
+    
     private static List<String> fonte;
     
     private static final Pattern PATTERN = Pattern.compile(
@@ -54,8 +63,11 @@ public class AnalisadorLexico {
                 palavraReservadaDo + "|" + sinalIgualdade + "|" + sinalMaior + "|" + sinalMenor + "|" +
                 sinalDiferente + "|" + sinalMenorIgual + "|" + sinalMaiorIgual + "|" + operadorSoma + "|" +
                 operadorSubtracao + "|" + operadorMultiplicacao + "|" + operadorDivisao + "|" +
-                operadorLogicoOr + "|" + operadorLogicoAnd + "|" + operadorLogicoNot + "|" + identificador + "|" +
-                numeroInteiro
+                numeroInteiro + "|" + finalDeComando + "|" + atribuicaDeVariavel + "|" + 
+                palavraReservadaProgram + "|" + palavraReservadaProcedure + "|" + palavraReservadaVar + "|" +
+                tipoDeDadoInt + "|" + tipoDeDadoBoolean + "|" +
+                operadorLogicoOr + "|" + operadorLogicoAnd + "|" + operadorLogicoNot + "|" + identificador 
+                
     );
     
     public static String eliminaComentarios(String fonte, Erro erroEncontrado){
@@ -180,6 +192,20 @@ public class AnalisadorLexico {
                 tipo = "OPERADOR LOGICO NOT";
             } else if(lexema.matches(numeroInteiro)){
                 tipo = "NUMERO INTEIRO";
+            } else if(lexema.matches(tipoDeDadoBoolean)){
+                tipo = "TIPO DE DADO 'BOOLEANO'";
+            } else if(lexema.matches(finalDeComando)){
+                tipo = "FINAL DO COMANDO";
+            } else if(lexema.matches(atribuicaDeVariavel)){
+                tipo = "ATRIBUIÇÃO DE VARIÁVEL";
+            } else if(lexema.matches(palavraReservadaProgram)){
+                tipo = "PALAVRA RESERVADA 'PROGRAM'";
+            } else if(lexema.matches(palavraReservadaProcedure)){
+                tipo = "PALAVRA RESERVADA 'PROCEDURE'";
+            } else if(lexema.matches(palavraReservadaVar)){
+                tipo = "PALAVRA RESERVADA 'VAR'";
+            } else if(lexema.matches(tipoDeDadoInt)){
+                tipo = "TIPO DE DADO 'INTEIRO'";
             } else if(lexema.matches(identificador)){
                 tipo = "IDENTIFICADOR";
             }
