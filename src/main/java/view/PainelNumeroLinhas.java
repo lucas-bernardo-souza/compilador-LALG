@@ -15,42 +15,50 @@ import java.awt.*;
  * @author Bernardo
  */
 public class PainelNumeroLinhas extends javax.swing.JPanel {
-    private JTextArea textArea;
-    /**
-     * Creates new form PainelNumeroLinhas
-     */
-    public PainelNumeroLinhas(JTextArea textArea) {
-        this.textArea = textArea;
-        textArea.getDocument().addDocumentListener(new DocumentListener(){
+    private JTextPane textPane;
+
+    public PainelNumeroLinhas(JTextPane textPane) {
+        this.textPane = textPane;
+
+        textPane.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(DocumentEvent e){
+            public void insertUpdate(DocumentEvent e) {
                 repaint();
             }
+
             @Override
-            public void removeUpdate(DocumentEvent e){
+            public void removeUpdate(DocumentEvent e) {
                 repaint();
             }
+
             @Override
-            public void changedUpdate(DocumentEvent e){
+            public void changedUpdate(DocumentEvent e) {
                 repaint();
             }
         });
     }
-    
-    protected void paintComponent(Graphics g){
+
+    @Override
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setFont(textArea.getFont());
+        g.setFont(textPane.getFont());
         FontMetrics fm = g.getFontMetrics();
         int lineHeight = fm.getHeight();
-        int lineCount = textArea.getLineCount();
-        
+        int lineCount = getLineCount();
+
         setPreferredSize(new Dimension(40, lineHeight * lineCount));
-        
-        for(int i = 0; i < lineCount; i++){
+
+        for (int i = 0; i < lineCount; i++) {
             String numeroLinha = String.valueOf(i + 1);
             int y = (i + 1) * lineHeight - fm.getDescent();
             g.drawString(numeroLinha, 5, y);
         }
+    }
+
+    // Método para contar linhas no JTextPane
+    private int getLineCount() {
+        String text = textPane.getText();
+        return text.isEmpty() ? 1 : text.split("\n").length;
     }
     
     /**

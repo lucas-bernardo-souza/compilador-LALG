@@ -18,8 +18,19 @@ import java.util.regex.Pattern;
 public class AnalisadorLexico {
        
     //private static final String KEYWORDS = "\\b(if|else|while|for|return|int|float|char)\\b";
-    //private static final String NUMBER = "-?\\d*\\.\\d+";
+    private static final String numeroReal = "-?\\d*\\.\\d+";
+    private static final String numeroReal_ = "-?\\d*\\,\\d+";
     //private static final String DELIMITER = "[()]";
+    private static final String finalDeComando = "\\;";
+    private static final String atribuicaDeVariavel = "\\:=";
+    private static final String abreParenteses = "\\(";
+    private static final String fechaParenteses = "\\)";
+    private static final String separador = "\\:";
+    private static final String virgula = "\\,";
+    
+    private static final String palavraReservadaProgram = "\\b(program)\\b";
+    private static final String palavraReservadaProcedure = "\\b(procedure)\\b";
+    private static final String palavraReservadaVar = "\\b(var)\\b";
     private static final String palavraReservadaBegin = "\\b(begin)\\b";
     private static final String palavraReservadaEnd = "\\b(end)\\b";
     private static final String palavraReservadaIf = "\\b(if)\\b";
@@ -27,6 +38,8 @@ public class AnalisadorLexico {
     private static final String palavraReservadaElse = "\\b (else)\\b";
     private static final String palavraReservadaWhile = "\\b(while)\\b";
     private static final String palavraReservadaDo = "\\b(do)\\b";
+    private static final String procedimentoDeLeitura = "\\b(read)\\b";
+    private static final String procedimentoDeEscrita = "\\b(write)\\b";
     
     private static final String sinalIgualdade = "\\=";
     private static final String sinalMaior = "\\>";
@@ -41,12 +54,20 @@ public class AnalisadorLexico {
     private static final String operadorLogicoOr = "\\b(or)\\b";
     private static final String operadorLogicoAnd = "\\b(and)\\b";
     private static final String operadorLogicoNot = "\\b(not)\\b";
+    private static final String valorBooleanoVerdadeiro = "\\b(true)\\b";
+    private static final String valorBooleanoFalso = "\\b(false)\\b";
     
     private static final String numeroInteiro = "-?\\d+";
     
     private static final String identificador = "[a-zA-Z_][a-zA-Z0-9_]*";
     
-    private static List<String> fonte;
+    private static final String tipoDeDadoInt = "\\b(int)\\b";
+    private static final String tipoDeDadoBoolean = "\\b(boolean)\\b";
+    
+    private static final String desconhecido = "(?!(?:-?\\d*\\.\\d+|-?\\d*\\,\\d+|;|:=|\\(|\\)|:|\\b(?:program|procedure|var|begin|end|if|then|else|while|do|read|write|div|or|and|not|true|false|int|boolean)\\b|=|>|<|<>|<=|>=|\\+|-|\\*|[a-zA-Z_][a-zA-Z0-9_]*|-?\\d+))[\\S]";
+    
+    private Erro erroComentario = new Erro();
+    
     
     private static final Pattern PATTERN = Pattern.compile(
         palavraReservadaBegin + "|" + palavraReservadaEnd + "|" + palavraReservadaIf + "|" + 
@@ -54,18 +75,29 @@ public class AnalisadorLexico {
                 palavraReservadaDo + "|" + sinalIgualdade + "|" + sinalMaior + "|" + sinalMenor + "|" +
                 sinalDiferente + "|" + sinalMenorIgual + "|" + sinalMaiorIgual + "|" + operadorSoma + "|" +
                 operadorSubtracao + "|" + operadorMultiplicacao + "|" + operadorDivisao + "|" +
+                numeroInteiro + "|" + finalDeComando + "|" + atribuicaDeVariavel + "|" + separador + "|" +
+                palavraReservadaProgram + "|" + palavraReservadaProcedure + "|" + palavraReservadaVar + "|" +
+                tipoDeDadoInt + "|" + tipoDeDadoBoolean + "|" + abreParenteses + "|" + fechaParenteses + "|" +
                 operadorLogicoOr + "|" + operadorLogicoAnd + "|" + operadorLogicoNot + "|" + identificador + "|" +
-                numeroInteiro
+                procedimentoDeLeitura + "|" + procedimentoDeEscrita + "|" + valorBooleanoVerdadeiro + "|" +
+                valorBooleanoFalso + "|" + numeroReal + "|" + numeroReal_ + "|" + desconhecido + "|" + virgula
+                
     );
     
-    public static String eliminaComentarios(String fonte, Erro erroEncontrado){
+    public Erro getErroComentario(){
+        return erroComentario;
+    }
+    
+    public String eliminaComentarios(String fonte){
         
         // remover coment´rios de linha
         StringBuilder filtrado = new StringBuilder();
         String[] linhas = fonte.split("\n");
+        
         for(String linha : linhas){
             int indiceComentario = linha.indexOf("//");
             if(indiceComentario != -1){
+                // remove tudo apos o //
                 linha = linha.substring(0, indiceComentario);
             }
             filtrado.append(linha).append("\n");
@@ -79,12 +111,10 @@ public class AnalisadorLexico {
         int fechaChaves = temp.lastIndexOf('}');
         
         if(abreChaves != -1 && fechaChaves == -1){
-            erroEncontrado.setNome("Comentário sem fechamento");
-            erroEncontrado.setFase("Léxica");
-            erroEncontrado.setDescricao("Não foi possível encontrar o final do arquivo");
-            erroEncontrado.setLinha(abreChaves);
-            erroEncontrado.setColuna(0);
-            return fonte;
+            addErro("Comentário sem fechamento", "Léxica", "Não foi possível encontrar o final do arquivo", abreChaves, 0);
+            
+            // remove tudo apos a abertura do comentarioó
+            return temp.substring(0, abreChaves);
         }
         
         boolean dentroDeChaves = false;
@@ -103,6 +133,14 @@ public class AnalisadorLexico {
         
     }
 
+    public void addErro(String nome, String fase, String descricao, int linha, int coluna){
+        erroComentario.setNome(nome);
+        erroComentario.setFase(fase);
+        erroComentario.setDescricao(descricao);
+        erroComentario.setLinha(linha);
+        erroComentario.setColuna(coluna);
+    }
+    
     public static List<Token> tokenize(String codFonte) {
         List<Token> tokens = new ArrayList<>();
         Matcher matcher = PATTERN.matcher(codFonte);
@@ -180,16 +218,51 @@ public class AnalisadorLexico {
                 tipo = "OPERADOR LOGICO NOT";
             } else if(lexema.matches(numeroInteiro)){
                 tipo = "NUMERO INTEIRO";
+            } else if(lexema.matches(numeroReal)){
+                tipo = "NUMERO REAL";
+            } else if(lexema.matches(numeroReal_)){
+                tipo = "NUMERO REAL";
+            } else if(lexema.matches(tipoDeDadoBoolean)){
+                tipo = "TIPO DE DADO 'BOOLEANO'";
+            } else if(lexema.matches(finalDeComando)){
+                tipo = "FINAL DO COMANDO";
+            } else if(lexema.matches(atribuicaDeVariavel)){
+                tipo = "ATRIBUIÇÃO DE VARIÁVEL";
+            } else if(lexema.matches(palavraReservadaProgram)){
+                tipo = "PALAVRA RESERVADA 'PROGRAM'";
+            } else if(lexema.matches(palavraReservadaProcedure)){
+                tipo = "PALAVRA RESERVADA 'PROCEDURE'";
+            } else if(lexema.matches(palavraReservadaVar)){
+                tipo = "PALAVRA RESERVADA 'VAR'";
+            } else if(lexema.matches(tipoDeDadoInt)){
+                tipo = "TIPO DE DADO 'INTEIRO'";
+            } else if(lexema.matches(abreParenteses)){
+                tipo = "ABRE PARENTESES";
+            } else if(lexema.matches(fechaParenteses)){
+                tipo = "FECHA PARENTESES";
+            } else if(lexema.matches(procedimentoDeLeitura)){
+                tipo = "PROCEDIMENTO DE LEITURA";
+            } else if(lexema.matches(procedimentoDeEscrita)){
+                tipo = "PROCEDIMENTO DE ESCRITA";
+            } else if(lexema.matches(valorBooleanoVerdadeiro)){
+                tipo = "CONSTANTE BOOLEANA 'TRUE'";
+            } else if(lexema.matches(valorBooleanoFalso)){
+                tipo = "CONSTANTE BOOLEANA 'FALSE'";
+            } else if(lexema.matches(separador)){
+                tipo = "SEPARADOR";
+            } else if(lexema.matches(virgula)){
+                tipo = "VIRGULA";
+            } else if(lexema.matches(desconhecido)){
+                tipo = "UNKNOWN";
             } else if(lexema.matches(identificador)){
                 tipo = "IDENTIFICADOR";
-            }
-            else{
+            } else{
                 tipo = "UNKNOWN";
             }
             
             tokens.add(new Token(tipo, lexema, linha, colInicio, colFinal));
         }
-        tokens.forEach(System.out::println);
+        //tokens.forEach(System.out::println);
         return tokens;
     }
     
@@ -203,11 +276,11 @@ public class AnalisadorLexico {
                         token.getLinha(), token.getColunaInicial());
                 errosEncontrados.add(erroAlfabeto);
             }
-            if("NUMBER".equals(token.getToken())){
+            if("NUMERO REAL".equals(token.getToken())){
                 String lexema = token.getLexema();
                 if(lexema.contains("..") || lexema.contains(",")){
                     Erro erroNumero = new Erro("Numero mal formado", "Léxica",
-                            "O número real: " + token.getLexema()+ ", foi mal formulado.",
+                            "O número real: " + token.getLexema()+ ", foi mal formulado. A linguagem não aceita numeros reais.",
                             token.getLinha(), token.getColunaInicial());
                     errosEncontrados.add(erroNumero);
                 }

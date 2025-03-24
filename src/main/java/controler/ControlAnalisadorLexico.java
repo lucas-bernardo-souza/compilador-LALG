@@ -15,9 +15,9 @@ import model.Token;
  * @author Bernardo
  */
 public class ControlAnalisadorLexico {
-    private static AnalisadorLexico analisador;
+    private AnalisadorLexico analisador = new AnalisadorLexico();
     private List<Token> tokens;
-    private List<Erro> erros;
+    private List<Erro> erros = new ArrayList();
     
     public ControlAnalisadorLexico(){
         if(analisador == null){
@@ -29,10 +29,14 @@ public class ControlAnalisadorLexico {
         return tokens;
     }
     
+    public List<Erro> getErros(){
+        return erros;
+    }
+    
     public void analiseLexica(String codFonte){
         String codigoSemComentarios = eliminaComentarios(codFonte);
         tokens = tokenize(codigoSemComentarios);
-        erros = analisador.buscaErrosLexicos(tokens);
+        erros.addAll(analisador.buscaErrosLexicos(tokens));
     }
     
     public List<Token> tokenize(String input){
@@ -40,18 +44,14 @@ public class ControlAnalisadorLexico {
         return tokens;
     }
     
-    // Preciso pensar numa forma de mostrar o erro nos logs de erros da interface
+   
     public String eliminaComentarios(String codigoFonte){
-        Erro erroComentario = new Erro();
-        String fonte = analisador.eliminaComentarios(codigoFonte, erroComentario);
-        /* Verifica se o objeto erro está vazio, no caso afirmativo não foram
-        encontrados erros */
-        if(erroComentario.getNome() == null){
-            return fonte;
-        } else {
-            /* Criar um método na interface que recebe um objeto erro para exibir
-            o erro no jText de logs */
-            return null;
+        
+        String fonte = analisador.eliminaComentarios(codigoFonte);
+        if(analisador.getErroComentario().getNome() != null){
+            erros.add(analisador.getErroComentario());
         }
+        return fonte;
+        
     }
 }

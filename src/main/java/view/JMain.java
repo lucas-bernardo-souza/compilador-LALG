@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import model.Erro;
 import model.Token;
 
 /**
@@ -180,13 +182,23 @@ public class JMain extends javax.swing.JFrame {
 
     private void jMenuItemAnaliseLexicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAnaliseLexicaActionPerformed
         // TODO add your handling code here:
+        // Inicializa a tela de logs de compilação
+        inicializaLogsDeCompilacao();
+        
+        // inicio do processo de analise lexica
         inicializaTabelaLexemas();
+        
         // Criando lista de tokens
-        String input = getTextoAbaAtiva();
+        String input = getTextoAbaAtiva(); // Obter o codigo fonte
         analisadorLexico.analiseLexica(input);
         
+        // Recupera os erros encontrados
+        List<Erro> erros = analisadorLexico.getErros();
+        exibeErros(erros);
         
+        // Exibe os tokens na interface
         addTokensTabela(analisadorLexico.getTokens());
+        
         
     }//GEN-LAST:event_jMenuItemAnaliseLexicaActionPerformed
 
@@ -216,11 +228,11 @@ public class JMain extends javax.swing.JFrame {
     private void criarNovoArquivo(){
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
-        JTextArea textArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JTextPane textPane = new JTextPane();
+        JScrollPane scrollPane = new JScrollPane(textPane);
         
         // Criando o painel de numeração de linhas e adicionado ao JScrollPane
-        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textArea);
+        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textPane);
         scrollPane.setRowHeaderView(painelNumeroLinhas);
         
         String nomeAba = "Arquivo " + contadorArquivos++;
@@ -230,12 +242,12 @@ public class JMain extends javax.swing.JFrame {
     private void criarNovoArquivo(String texto){
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
-        JTextArea textArea = new JTextArea();
-        textArea.setText(texto);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JTextPane textPane = new JTextPane();
+        textPane.setText(texto);
+        JScrollPane scrollPane = new JScrollPane(textPane);
         
         // Criando o painel de numeração de linhas e adicionado ao JScrollPane
-        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textArea);
+        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textPane);
         scrollPane.setRowHeaderView(painelNumeroLinhas);
         
         String nomeAba = "Arquivo " + contadorArquivos++;
@@ -247,21 +259,34 @@ public class JMain extends javax.swing.JFrame {
         
         if(abaSelecionada != -1){
             JScrollPane scrollPane = (JScrollPane) tabbedPane.getComponentAt(abaSelecionada);
-            JTextArea textArea = (JTextArea) scrollPane.getViewport().getView();
-            return textArea.getText();
+             JTextPane textPane = (JTextPane) scrollPane.getViewport().getView();
+            return textPane.getText();
         }
         return null;
     }
     
-    private void analiseLexica(List<Token> tokens){
-        String output = ControlAnalisadorLexico.analiseLexica(tokens);
+    private void exibeErros(List<Erro> erros){
+        for(Erro erro : erros){
+            addErro(erro);
+        }
+    }
+    
+    // Exibe os erros encontrados na jPanelLogsCompilacao
+    private void addErro(Erro erro){
+        // Recuperando o jScrollPanel de logs de compilacao
+        JScrollPane jScrollPaneLogsCompilacao = (JScrollPane) jPanelLogsCompilacao.getComponent(0);
+        // Recupera o text area
+        JTextArea textAreaLogsCompilacao = (JTextArea) jScrollPaneLogsCompilacao.getViewport().getView();
+        // Adiciona a descrição do erro ao final do textArea
+        textAreaLogsCompilacao.append(erro.toString() + "\n");
+    }
+    
+    private void inicializaLogsDeCompilacao(){
         JTextArea textArea = new JTextArea();
-        textArea.setText(output);
         JScrollPane scrollPane = new JScrollPane(textArea);
         jPanelLogsCompilacao.setLayout(new BorderLayout());
         jPanelLogsCompilacao.add(scrollPane, BorderLayout.CENTER);
         jTabbedPainelDeSaida.add("Logs de compilação",jPanelLogsCompilacao);
-        
     }
     
     private void addTokensTabela(List<Token> tokens){
@@ -274,6 +299,8 @@ public class JMain extends javax.swing.JFrame {
             tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(),tokens.get(i).getLinha() , tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
         } 
     }
+    
+    
     
     
     
