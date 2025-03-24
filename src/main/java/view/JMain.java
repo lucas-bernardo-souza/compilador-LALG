@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import model.Erro;
 import model.Token;
 
@@ -227,11 +228,11 @@ public class JMain extends javax.swing.JFrame {
     private void criarNovoArquivo(){
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
-        JTextArea textArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JTextPane textPane = new JTextPane();
+        JScrollPane scrollPane = new JScrollPane(textPane);
         
         // Criando o painel de numeração de linhas e adicionado ao JScrollPane
-        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textArea);
+        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textPane);
         scrollPane.setRowHeaderView(painelNumeroLinhas);
         
         String nomeAba = "Arquivo " + contadorArquivos++;
@@ -241,12 +242,12 @@ public class JMain extends javax.swing.JFrame {
     private void criarNovoArquivo(String texto){
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
-        JTextArea textArea = new JTextArea();
-        textArea.setText(texto);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JTextPane textPane = new JTextPane();
+        textPane.setText(texto);
+        JScrollPane scrollPane = new JScrollPane(textPane);
         
         // Criando o painel de numeração de linhas e adicionado ao JScrollPane
-        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textArea);
+        PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textPane);
         scrollPane.setRowHeaderView(painelNumeroLinhas);
         
         String nomeAba = "Arquivo " + contadorArquivos++;
@@ -258,8 +259,8 @@ public class JMain extends javax.swing.JFrame {
         
         if(abaSelecionada != -1){
             JScrollPane scrollPane = (JScrollPane) tabbedPane.getComponentAt(abaSelecionada);
-            JTextArea textArea = (JTextArea) scrollPane.getViewport().getView();
-            return textArea.getText();
+             JTextPane textPane = (JTextPane) scrollPane.getViewport().getView();
+            return textPane.getText();
         }
         return null;
     }
@@ -298,6 +299,8 @@ public class JMain extends javax.swing.JFrame {
             tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(),tokens.get(i).getLinha() , tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
         } 
     }
+    
+    
     
     
     

@@ -70,7 +70,7 @@ public class Erro {
 
     @Override
     public String toString() {
-        return "Erro{" + "nome=" + nome + ", fase=" + fase + ", descricao=" + descricao + ", linha=" + linha + ", coluna=" + coluna + '}';
+        return "Erro{ " + "nome= " + nome + ", fase= " + fase + ",\ndescricao= " + descricao + ",\nlinha= " + linha + ", coluna= " + coluna + '}' + "\n";
     }
     
 }
