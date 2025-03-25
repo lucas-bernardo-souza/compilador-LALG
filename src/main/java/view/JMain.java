@@ -7,12 +7,17 @@ package view;
 import controler.ControlAnalisadorLexico;
 import controler.ControlArquivo;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import model.Erro;
 import model.Token;
 
@@ -194,8 +199,9 @@ public class JMain extends javax.swing.JFrame {
         
         // Recupera os erros encontrados
         List<Erro> erros = analisadorLexico.getErros();
-        exibeErros(erros);
         
+        exibeErros(erros);
+   
         // Exibe os tokens na interface
         addTokensTabela(analisadorLexico.getTokens());
         
@@ -265,8 +271,47 @@ public class JMain extends javax.swing.JFrame {
         return null;
     }
     
+    private static int getPosicaoLinha(String texto, int linha) {
+        if (linha == 0) return 0; // A primeira linha começa no índice 0
+
+        int posicao = -1; // Começa antes do início do texto
+        int contadorLinhas = 0;
+        while (contadorLinhas < linha-2){
+            posicao = texto.indexOf("\n", posicao+1);
+            if (posicao == -1) return -1;
+            contadorLinhas++;
+        }
+        return posicao +1; // Retorna o início da linha correta
+    }
+    
+    private void pintarLinha(int linha){
+        int abaSelecionada = tabbedPane.getSelectedIndex();
+        JTextPane textPane = new JTextPane();
+        if(abaSelecionada != -1){
+            JScrollPane scrollPane = (JScrollPane) tabbedPane.getComponentAt(abaSelecionada);
+            textPane = (JTextPane) scrollPane.getViewport().getView();
+        }
+        
+        StyledDocument doc = textPane.getStyledDocument();
+        String texto = textPane.getText();
+        
+        int inicio = getPosicaoLinha(texto, linha);
+        int fim = getPosicaoLinha(texto, linha + 1);
+        //int fim = texto.indexOf("\n", inicio);
+        //if(fim == -1) fim = texto.length();
+        
+        // Criando um estilo para fundo colorido
+        SimpleAttributeSet estilo = new SimpleAttributeSet();
+        StyleConstants.setBackground(estilo, Color.RED);
+        StyleConstants.setForeground(estilo, Color.WHITE);
+        
+        // Aplicando o estilo ao intervalo de texto
+        doc.setCharacterAttributes(inicio, fim - inicio, estilo, false);
+    }
+    
     private void exibeErros(List<Erro> erros){
         for(Erro erro : erros){
+            pintarLinha(erro.getLinha());
             addErro(erro);
         }
     }
