@@ -46,7 +46,7 @@ public class PainelNumeroLinhas extends javax.swing.JPanel {
         int lineHeight = fm.getHeight();
         int lineCount = getLineCount();
 
-        setPreferredSize(new Dimension(40, lineHeight * lineCount));
+        setPreferredSize(new Dimension(55, lineHeight * lineCount));
 
         for (int i = 0; i < lineCount; i++) {
             String numeroLinha = String.valueOf(i + 1);

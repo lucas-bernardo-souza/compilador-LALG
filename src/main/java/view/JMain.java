@@ -311,7 +311,7 @@ public class JMain extends javax.swing.JFrame {
     
     private void exibeErros(List<Erro> erros){
         for(Erro erro : erros){
-            pintarLinha(erro.getLinha());
+            //pintarLinha(erro.getLinha());
             addErro(erro);
         }
     }
