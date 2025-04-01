@@ -289,10 +289,20 @@ public class AnalisadorLexico {
                  String lexema = token.getLexema();
                  double limite = 2147483648.0;
                  if(Double.valueOf(lexema) < -limite || Double.valueOf(lexema) > limite){
-                     Erro erroInteriroGrande = new Erro("Estouro de pilha", "Léxica",
+                     Erro erroEstouroPilha = new Erro("Estouro de pilha", "Léxica",
                             "O número inteiro: " + token.getLexema()+ ", é muito grande.",
                             token.getLinha(), token.getColunaInicial());
-                    errosEncontrados.add(erroInteriroGrande);
+                    errosEncontrados.add(erroEstouroPilha);
+                 }
+             }
+             
+             if("IDENTIFICADOR".equals(token.getToken())){
+                 String lexema = token.getLexema();
+                 if(lexema.length() > 20){
+                     Erro erroIdentificadoGrande = new Erro("Identificador muito longo", "Léxica",
+                            "O identificador: " + token.getLexema()+ ", é muito longo.",
+                            token.getLinha(), token.getColunaInicial());
+                    errosEncontrados.add(erroIdentificadoGrande);
                  }
              }
         }
