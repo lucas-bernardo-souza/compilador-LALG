@@ -285,6 +285,16 @@ public class AnalisadorLexico {
                     errosEncontrados.add(erroNumero);
                 }
             }
+             if("NUMERO INTEIRO".equals(token.getToken())){
+                 String lexema = token.getLexema();
+                 double limite = 2147483648.0;
+                 if(Double.valueOf(lexema) < -limite || Double.valueOf(lexema) > limite){
+                     Erro erroInteriroGrande = new Erro("Estouro de pilha", "Léxica",
+                            "O número inteiro: " + token.getLexema()+ ", é muito grande.",
+                            token.getLinha(), token.getColunaInicial());
+                    errosEncontrados.add(erroInteriroGrande);
+                 }
+             }
         }
         return errosEncontrados;
     }
