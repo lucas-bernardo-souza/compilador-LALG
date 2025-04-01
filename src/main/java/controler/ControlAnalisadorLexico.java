@@ -54,4 +54,8 @@ public class ControlAnalisadorLexico {
         return fonte;
         
     }
+    
+    public void limparErros(){
+        erros.removeAll(erros);
+    }
 }

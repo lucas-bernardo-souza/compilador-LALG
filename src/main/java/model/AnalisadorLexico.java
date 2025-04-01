@@ -269,7 +269,7 @@ public class AnalisadorLexico {
     public static List<Erro> buscaErrosLexicos(List<Token> tokens){
         List<Erro> errosEncontrados = new ArrayList<>();
         for(Token token : tokens){
-            System.out.println(token.getToken());
+            //System.out.println(token.getToken());
             if("UNKNOWN".equals(token.getToken())){
                 Erro erroAlfabeto = new Erro("Caracter fora do alfabeto", "Léxica", 
                         "O caracter: " + token.getLexema()+ ", não pertence ao alfabeto da linguagem.",
