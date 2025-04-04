@@ -8,8 +8,16 @@ import controler.ControlAnalisadorLexico;
 import controler.ControlArquivo;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -250,6 +258,35 @@ public class JMain extends javax.swing.JFrame {
 
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
+        
+        // Criando o painel do título da aba com o botão de fechar
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        tabPanel.setOpaque(false);
+        
+        JLabel titleLabel = new JLabel(nomeAba);
+        JButton closeButton = new JButton("x");
+        closeButton.setMargin(new Insets(0, 2, 0, 2));
+        closeButton.setFocusable(false);
+        closeButton.setPreferredSize(new Dimension(16, 16));
+        closeButton.setFont(new Font("Arial", Font.BOLD, 10));
+        closeButton.setBorder(BorderFactory.createEmptyBorder());
+        closeButton.setContentAreaFilled(false);
+
+        // Ação para fechar a aba ao clicar no botão
+        closeButton.addActionListener(e -> {
+            int index = tabbedPane.indexOfComponent(scrollPane);
+            if (index != -1) {
+                tabbedPane.remove(index);
+            }
+            contadorArquivos--;
+        });
+
+        // Adicionando título e botão ao painel da aba
+        tabPanel.add(titleLabel);
+        tabPanel.add(closeButton);
+
+        // Definir o painel como título da aba
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane), tabPanel); 
     }
 
     private void criarNovoArquivo(String texto) {
@@ -265,6 +302,35 @@ public class JMain extends javax.swing.JFrame {
 
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
+        
+        // Criando o painel do título da aba com o botão de fechar
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        tabPanel.setOpaque(false);
+        
+        JLabel titleLabel = new JLabel(nomeAba);
+        JButton closeButton = new JButton("x");
+        closeButton.setMargin(new Insets(0, 2, 0, 2));
+        closeButton.setFocusable(false);
+        closeButton.setPreferredSize(new Dimension(16, 16));
+        closeButton.setFont(new Font("Arial", Font.BOLD, 10));
+        closeButton.setBorder(BorderFactory.createEmptyBorder());
+        closeButton.setContentAreaFilled(false);
+
+        // Ação para fechar a aba ao clicar no botão
+        closeButton.addActionListener(e -> {
+            int index = tabbedPane.indexOfComponent(scrollPane);
+            if (index != -1) {
+                tabbedPane.remove(index);
+            }
+            contadorArquivos--;
+        });
+
+        // Adicionando título e botão ao painel da aba
+        tabPanel.add(titleLabel);
+        tabPanel.add(closeButton);
+
+        // Definir o painel como título da aba
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane), tabPanel);
     }
 
     private String getTextoAbaAtiva() {
