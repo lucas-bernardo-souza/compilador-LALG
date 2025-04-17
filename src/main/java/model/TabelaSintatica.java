@@ -34,7 +34,6 @@ public class TabelaSintatica {
         tabela.put("<parte_de_declarações_de_variáveis>", Map.of("procedure", "ε"));
         tabela.put("<parte_de_declarações_de_variáveis>", Map.of("begin", "ε"));
         tabela.put("<parte_de_declarações_de_variáveis>", Map.of("identificador", "erro")); // tratar os identificadores
-        tabela.put("<parte_de_declarações_de_variáveis>", Map.of(".", "erro"));
         tabela.put("<parte_de_declarações_de_variáveis>", Map.of(":", "erro"));
         tabela.put("<parte_de_declarações_de_variáveis>", Map.of(",", "erro"));
         
@@ -46,10 +45,23 @@ public class TabelaSintatica {
         tabela.put("<declaração_de_variáveis'>", Map.of("procedure", "ε"));
         tabela.put("<declaração_de_variáveis'>", Map.of("begin", "ε"));
         tabela.put("<declaração_de_variáveis'>", Map.of("identificador", "erro"));
-        tabela.put("<declaração_de_variáveis'>", Map.of(".", "erro"));
         tabela.put("<declaração_de_variáveis'>", Map.of(":", "erro"));
         tabela.put("<declaração_de_variáveis'>", Map.of(",", "erro"));
         
+        tabela.put("<declaração_de_variáveis>", Map.of("program", "erro"));
+        tabela.put("<declaração_de_variáveis>", Map.of("int", " <tipo> <lista_de_identificadores>"));
+        tabela.put("<declaração_de_variáveis>", Map.of("boolean", " <tipo> <lista_de_identificadores>"));
+        tabela.put("<declaração_de_variáveis>", Map.of(".", "TOKEN_SYNC"));
+        tabela.put("<declaração_de_variáveis>", Map.of(";", "TOKEN_SYNC"));
+        tabela.put("<declaração_de_variáveis>", Map.of("procedure", "TOKEN_SYNC"));
+        tabela.put("<declaração_de_variáveis>", Map.of("begin", "TOKEN_SYNC"));
+        tabela.put("<declaração_de_variáveis>", Map.of("identificador", "erro"));
+        tabela.put("<declaração_de_variáveis>", Map.of(":", "erro"));
+        tabela.put("<declaração_de_variáveis>", Map.of(",", "erro"));
+        
+        tabela.put("<tipo>", Map.of("program", "erro"));
+        tabela.put("<tipo>", Map.of("int", "int"));
+        tabela.put("<tipo>", Map.of("boolean", "boolean"));
         
     }
 }
