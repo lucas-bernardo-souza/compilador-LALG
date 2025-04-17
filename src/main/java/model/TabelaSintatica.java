@@ -46,7 +46,9 @@ public class TabelaSintatica {
         tabela.put("<declaração_de_variáveis'>", Map.of("procedure", "ε"));
         tabela.put("<declaração_de_variáveis'>", Map.of("begin", "ε"));
         tabela.put("<declaração_de_variáveis'>", Map.of("identificador", "erro"));
-        
+        tabela.put("<declaração_de_variáveis'>", Map.of(".", "erro"));
+        tabela.put("<declaração_de_variáveis'>", Map.of(":", "erro"));
+        tabela.put("<declaração_de_variáveis'>", Map.of(",", "erro"));
         
         
     }
