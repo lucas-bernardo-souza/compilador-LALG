@@ -8,8 +8,16 @@ import controler.ControlAnalisadorLexico;
 import controler.ControlArquivo;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -25,6 +33,7 @@ import model.Token;
  * @author lucas-bernardo
  */
 public class JMain extends javax.swing.JFrame {
+
     private javax.swing.JTabbedPane tabbedPane;
     private int contadorArquivos = 1;
     TabelaLexemas tabelaLexemas = new TabelaLexemas();
@@ -173,38 +182,44 @@ public class JMain extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    private void initComponentsTwo(){
+
+    private void initComponentsTwo() {
         // Abas para multiplos arquivos
         tabbedPane = new javax.swing.JTabbedPane();
     }
-    
+
     private void jMenuItemNovoArquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNovoArquivoActionPerformed
         // TODO add your handling code here:
         criarNovoArquivo();
     }//GEN-LAST:event_jMenuItemNovoArquivoActionPerformed
 
     private void jMenuItemAnaliseLexicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAnaliseLexicaActionPerformed
-        // TODO add your handling code here:
+
         // Inicializa a tela de logs de compilação
         inicializaLogsDeCompilacao();
-        
+
         // inicio do processo de analise lexica
         inicializaTabelaLexemas();
+        
+        analisadorLexico.limparErros();
+        
+        
         
         // Criando lista de tokens
         String input = getTextoAbaAtiva(); // Obter o codigo fonte
         analisadorLexico.analiseLexica(input);
-        
+
         // Recupera os erros encontrados
         List<Erro> erros = analisadorLexico.getErros();
         
+        System.out.println(analisadorLexico.getErros());
+
         exibeErros(erros);
-   
+
         // Exibe os tokens na interface
         addTokensTabela(analisadorLexico.getTokens());
-        
-        
+
+
     }//GEN-LAST:event_jMenuItemAnaliseLexicaActionPerformed
 
     private void jMenuItemSalvarArquivoComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalvarArquivoComoActionPerformed
@@ -219,7 +234,7 @@ public class JMain extends javax.swing.JFrame {
         criarNovoArquivo(texto);
     }//GEN-LAST:event_jMenuItemAbrirArquivoActionPerformed
 
-    private void inicializaTabelaLexemas(){
+    private void inicializaTabelaLexemas() {
         tabelaLexemas.limpaTabela();
         // criando a tabela de lexemas
         JTable tabela = tabelaLexemas.tabelaLexemas();
@@ -227,96 +242,162 @@ public class JMain extends javax.swing.JFrame {
         jPanelTabelaLexemas.setLayout(new BorderLayout());
         jPanelTabelaLexemas.add(scrollPane, BorderLayout.CENTER);
         // Exibindo a tabela
-        jTabbedPainelDeSaida.add("Tabela de lexemas",jPanelTabelaLexemas);
+        jTabbedPainelDeSaida.add("Tabela de lexemas", jPanelTabelaLexemas);
     }
-    
-    private void criarNovoArquivo(){
+
+    private void criarNovoArquivo() {
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
         JTextPane textPane = new JTextPane();
         JScrollPane scrollPane = new JScrollPane(textPane);
-        
+
         // Criando o painel de numeração de linhas e adicionado ao JScrollPane
         PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textPane);
         scrollPane.setRowHeaderView(painelNumeroLinhas);
-        
+
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
+        
+        // Criando o painel do título da aba com o botão de fechar
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        tabPanel.setOpaque(false);
+        
+        JLabel titleLabel = new JLabel(nomeAba);
+        JButton closeButton = new JButton("x");
+        closeButton.setMargin(new Insets(0, 2, 0, 2));
+        closeButton.setFocusable(false);
+        closeButton.setPreferredSize(new Dimension(16, 16));
+        closeButton.setFont(new Font("Arial", Font.BOLD, 10));
+        closeButton.setBorder(BorderFactory.createEmptyBorder());
+        closeButton.setContentAreaFilled(false);
+
+        // Ação para fechar a aba ao clicar no botão
+        closeButton.addActionListener(e -> {
+            int index = tabbedPane.indexOfComponent(scrollPane);
+            if (index != -1) {
+                tabbedPane.remove(index);
+            }
+            contadorArquivos--;
+        });
+
+        // Adicionando título e botão ao painel da aba
+        tabPanel.add(titleLabel);
+        tabPanel.add(closeButton);
+
+        // Definir o painel como título da aba
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane), tabPanel); 
     }
-    
-    private void criarNovoArquivo(String texto){
+
+    private void criarNovoArquivo(String texto) {
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
         JTextPane textPane = new JTextPane();
         textPane.setText(texto);
         JScrollPane scrollPane = new JScrollPane(textPane);
-        
+
         // Criando o painel de numeração de linhas e adicionado ao JScrollPane
         PainelNumeroLinhas painelNumeroLinhas = new PainelNumeroLinhas(textPane);
         scrollPane.setRowHeaderView(painelNumeroLinhas);
-        
+
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
-    }
-    
-    private String getTextoAbaAtiva(){
-        int abaSelecionada = tabbedPane.getSelectedIndex();
         
-        if(abaSelecionada != -1){
+        // Criando o painel do título da aba com o botão de fechar
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        tabPanel.setOpaque(false);
+        
+        JLabel titleLabel = new JLabel(nomeAba);
+        JButton closeButton = new JButton("x");
+        closeButton.setMargin(new Insets(0, 2, 0, 2));
+        closeButton.setFocusable(false);
+        closeButton.setPreferredSize(new Dimension(16, 16));
+        closeButton.setFont(new Font("Arial", Font.BOLD, 10));
+        closeButton.setBorder(BorderFactory.createEmptyBorder());
+        closeButton.setContentAreaFilled(false);
+
+        // Ação para fechar a aba ao clicar no botão
+        closeButton.addActionListener(e -> {
+            int index = tabbedPane.indexOfComponent(scrollPane);
+            if (index != -1) {
+                tabbedPane.remove(index);
+            }
+            contadorArquivos--;
+        });
+
+        // Adicionando título e botão ao painel da aba
+        tabPanel.add(titleLabel);
+        tabPanel.add(closeButton);
+
+        // Definir o painel como título da aba
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane), tabPanel);
+    }
+
+    private String getTextoAbaAtiva() {
+        int abaSelecionada = tabbedPane.getSelectedIndex();
+
+        if (abaSelecionada != -1) {
             JScrollPane scrollPane = (JScrollPane) tabbedPane.getComponentAt(abaSelecionada);
-             JTextPane textPane = (JTextPane) scrollPane.getViewport().getView();
+            JTextPane textPane = (JTextPane) scrollPane.getViewport().getView();
             return textPane.getText();
         }
         return null;
     }
-    
-    private static int getPosicaoLinha(String texto, int linha) {
-        if (linha == 0) return 0; // A primeira linha começa no índice 0
 
+    private static int getPosicaoLinha(String texto, int linha) {
+        if (linha == 0) {
+            return 0; // A primeira linha começa no índice 0
+        }
         int posicao = -1; // Começa antes do início do texto
         int contadorLinhas = 0;
-        while (contadorLinhas < linha-2){
-            posicao = texto.indexOf("\n", posicao+1);
-            if (posicao == -1) return -1;
+        while (contadorLinhas < linha - 2) {
+            posicao = texto.indexOf("\n", posicao + 1);
+            if (posicao == -1) {
+                return -1;
+            }
             contadorLinhas++;
         }
-        return posicao +1; // Retorna o início da linha correta
+        return posicao + 1; // Retorna o início da linha correta
     }
-    
-    private void pintarLinha(int linha){
+
+    private void pintarLinha(int linha) {
         int abaSelecionada = tabbedPane.getSelectedIndex();
         JTextPane textPane = new JTextPane();
-        if(abaSelecionada != -1){
+        if (abaSelecionada != -1) {
             JScrollPane scrollPane = (JScrollPane) tabbedPane.getComponentAt(abaSelecionada);
             textPane = (JTextPane) scrollPane.getViewport().getView();
         }
-        
+
         StyledDocument doc = textPane.getStyledDocument();
         String texto = textPane.getText();
-        
+
         int inicio = getPosicaoLinha(texto, linha);
         int fim = getPosicaoLinha(texto, linha + 1);
         //int fim = texto.indexOf("\n", inicio);
         //if(fim == -1) fim = texto.length();
-        
+
         // Criando um estilo para fundo colorido
         SimpleAttributeSet estilo = new SimpleAttributeSet();
         StyleConstants.setBackground(estilo, Color.RED);
         StyleConstants.setForeground(estilo, Color.WHITE);
-        
+
         // Aplicando o estilo ao intervalo de texto
         doc.setCharacterAttributes(inicio, fim - inicio, estilo, false);
     }
-    
-    private void exibeErros(List<Erro> erros){
-        for(Erro erro : erros){
-            //pintarLinha(erro.getLinha());
-            addErro(erro);
+
+    private void exibeErros(List<Erro> erros) {
+        limparLogs();
+        if (erros.isEmpty()) {
+            mensagemSucesso();
+        } else {
+            for (Erro erro : erros) {
+                //pintarLinha(erro.getLinha());
+                addErro(erro);
+            }
         }
     }
-    
+
     // Exibe os erros encontrados na jPanelLogsCompilacao
-    private void addErro(Erro erro){
+    private void addErro(Erro erro) {
         // Recuperando o jScrollPanel de logs de compilacao
         JScrollPane jScrollPaneLogsCompilacao = (JScrollPane) jPanelLogsCompilacao.getComponent(0);
         // Recupera o text area
@@ -325,29 +406,43 @@ public class JMain extends javax.swing.JFrame {
         textAreaLogsCompilacao.append(erro.toString() + "\n");
     }
     
-    private void inicializaLogsDeCompilacao(){
+    private void limparLogs() {
+    // Recupera o JScrollPane
+    JScrollPane jScrollPaneLogsCompilacao = (JScrollPane) jPanelLogsCompilacao.getComponent(0);
+    // Recupera o JTextArea
+    JTextArea textAreaLogsCompilacao = (JTextArea) jScrollPaneLogsCompilacao.getViewport().getView();
+    // Limpa o conteúdo do JTextArea
+    textAreaLogsCompilacao.setText("");
+}
+
+
+    private void mensagemSucesso() {
+        // Recuperando o jScrollPanel de logs de compilacao
+        JScrollPane jScrollPaneLogsCompilacao = (JScrollPane) jPanelLogsCompilacao.getComponent(0);
+        // Recupera o text area
+        JTextArea textAreaLogsCompilacao = (JTextArea) jScrollPaneLogsCompilacao.getViewport().getView();
+        // Adiciona a descrição do erro ao final do textArea
+        textAreaLogsCompilacao.append("Compilado com sucesso!");
+    }
+
+    private void inicializaLogsDeCompilacao() {
         JTextArea textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
         jPanelLogsCompilacao.setLayout(new BorderLayout());
         jPanelLogsCompilacao.add(scrollPane, BorderLayout.CENTER);
-        jTabbedPainelDeSaida.add("Logs de compilação",jPanelLogsCompilacao);
+        jTabbedPainelDeSaida.add("Logs de compilação", jPanelLogsCompilacao);
     }
-    
-    private void addTokensTabela(List<Token> tokens){
-        if(getTextoAbaAtiva() == null){
+
+    private void addTokensTabela(List<Token> tokens) {
+        if (getTextoAbaAtiva() == null) {
             JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        
-        
-        for(int i = 0; i < tokens.size(); i++){
-            tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(),tokens.get(i).getLinha() , tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
-        } 
+
+        for (int i = 0; i < tokens.size(); i++) {
+            tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(), tokens.get(i).getLinha(), tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
+        }
     }
-    
-    
-    
-    
-    
+
     /**
      * @param args the command line arguments
      */
@@ -382,7 +477,7 @@ public class JMain extends javax.swing.JFrame {
             }
         });
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenuArquivo;
