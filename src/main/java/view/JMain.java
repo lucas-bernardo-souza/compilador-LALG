@@ -197,15 +197,12 @@ public class JMain extends javax.swing.JFrame {
         analisadorLexico.limparErros();
         
         
-        
         // Criando lista de tokens
         String input = getTextoAbaAtiva(); // Obter o codigo fonte
         analisadorLexico.analiseLexica(input);
 
         // Recupera os erros encontrados
         List<Erro> erros = analisadorLexico.getErros();
-        
-        System.out.println(analisadorLexico.getErros());
 
         exibeErros(erros);
 
