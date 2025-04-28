@@ -4,9 +4,11 @@ view\PainelNumeroLinhas$1.class
 view\PainelNumeroLinhas.class
 view\JMain$1.class
 view\TabelaLexemas.class
+model\TabelaSintatica.class
 view\JMain$5.class
 view\JMain$2.class
 controler\ControlAnalisadorLexico.class
+model\AnalisadorSintatico.class
 model\AbrirArquivo.class
 view\TabelaLexemas$1.class
 view\JMain$3.class
