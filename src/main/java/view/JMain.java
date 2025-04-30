@@ -5,6 +5,7 @@
 package view;
 
 import controler.ControlAnalisadorLexico;
+import controler.ControlAnalisadorSintatico;
 import controler.ControlArquivo;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,6 +27,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import model.Erro;
+import model.PassoSintatico;
 import model.Token;
 
 /**
@@ -38,6 +40,7 @@ public class JMain extends javax.swing.JFrame {
     private int contadorArquivos = 1;
     TabelaLexemas tabelaLexemas = new TabelaLexemas();
     ControlAnalisadorLexico analisadorLexico = new ControlAnalisadorLexico();
+    ControlAnalisadorSintatico analisadorSintatico;
 
     /**
      * Creates new form JMain
@@ -59,6 +62,7 @@ public class JMain extends javax.swing.JFrame {
         jTabbedPainelDeSaida = new javax.swing.JTabbedPane();
         jPanelLogsCompilacao = new javax.swing.JPanel();
         jPanelTabelaLexemas = new javax.swing.JPanel();
+        jPanelPassosAnalisador = new javax.swing.JPanel();
         jPanelPrincipal = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuArquivo = new javax.swing.JMenu();
@@ -72,6 +76,7 @@ public class JMain extends javax.swing.JFrame {
         jMenuEditar = new javax.swing.JMenu();
         jMenuCompilar = new javax.swing.JMenu();
         jMenuItemAnaliseLexica = new javax.swing.JMenuItem();
+        jMenuItemAnaliseSintatica = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -79,7 +84,7 @@ public class JMain extends javax.swing.JFrame {
         jPanelLogsCompilacao.setLayout(jPanelLogsCompilacaoLayout);
         jPanelLogsCompilacaoLayout.setHorizontalGroup(
             jPanelLogsCompilacaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 847, Short.MAX_VALUE)
+            .addGap(0, 1064, Short.MAX_VALUE)
         );
         jPanelLogsCompilacaoLayout.setVerticalGroup(
             jPanelLogsCompilacaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -92,7 +97,7 @@ public class JMain extends javax.swing.JFrame {
         jPanelTabelaLexemas.setLayout(jPanelTabelaLexemasLayout);
         jPanelTabelaLexemasLayout.setHorizontalGroup(
             jPanelTabelaLexemasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 847, Short.MAX_VALUE)
+            .addGap(0, 1064, Short.MAX_VALUE)
         );
         jPanelTabelaLexemasLayout.setVerticalGroup(
             jPanelTabelaLexemasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -100,6 +105,19 @@ public class JMain extends javax.swing.JFrame {
         );
 
         jTabbedPainelDeSaida.addTab("Tabela de lexemas", jPanelTabelaLexemas);
+
+        javax.swing.GroupLayout jPanelPassosAnalisadorLayout = new javax.swing.GroupLayout(jPanelPassosAnalisador);
+        jPanelPassosAnalisador.setLayout(jPanelPassosAnalisadorLayout);
+        jPanelPassosAnalisadorLayout.setHorizontalGroup(
+            jPanelPassosAnalisadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1064, Short.MAX_VALUE)
+        );
+        jPanelPassosAnalisadorLayout.setVerticalGroup(
+            jPanelPassosAnalisadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 166, Short.MAX_VALUE)
+        );
+
+        jTabbedPainelDeSaida.addTab("Análise Sintática", jPanelPassosAnalisador);
 
         javax.swing.GroupLayout jPanelPrincipalLayout = new javax.swing.GroupLayout(jPanelPrincipal);
         jPanelPrincipal.setLayout(jPanelPrincipalLayout);
@@ -161,6 +179,14 @@ public class JMain extends javax.swing.JFrame {
         });
         jMenuCompilar.add(jMenuItemAnaliseLexica);
 
+        jMenuItemAnaliseSintatica.setText("Analise Sintática");
+        jMenuItemAnaliseSintatica.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAnaliseSintaticaActionPerformed(evt);
+            }
+        });
+        jMenuCompilar.add(jMenuItemAnaliseSintatica);
+
         jMenuBar1.add(jMenuCompilar);
 
         setJMenuBar(jMenuBar1);
@@ -186,24 +212,21 @@ public class JMain extends javax.swing.JFrame {
     private void initComponentsTwo() {
         // Abas para multiplos arquivos
         tabbedPane = new javax.swing.JTabbedPane();
+        inicializaLogsDeCompilacao();
+        inicializaTabelaLexemas();
+        inicializaPassosDaAnalise();
     }
 
     private void jMenuItemNovoArquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNovoArquivoActionPerformed
-        // TODO add your handling code here:
+
         criarNovoArquivo();
     }//GEN-LAST:event_jMenuItemNovoArquivoActionPerformed
 
-    private void jMenuItemAnaliseLexicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAnaliseLexicaActionPerformed
-
+    private void analiseLexica() {
         // Inicializa a tela de logs de compilação
-        inicializaLogsDeCompilacao();
 
-        // inicio do processo de analise lexica
-        inicializaTabelaLexemas();
-        
         analisadorLexico.limparErros();
-        
-        
+
         // Criando lista de tokens
         String input = getTextoAbaAtiva(); // Obter o codigo fonte
         analisadorLexico.analiseLexica(input);
@@ -215,8 +238,10 @@ public class JMain extends javax.swing.JFrame {
 
         // Exibe os tokens na interface
         addTokensTabela(analisadorLexico.getTokens());
+    }
 
-
+    private void jMenuItemAnaliseLexicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAnaliseLexicaActionPerformed
+        analiseLexica();
     }//GEN-LAST:event_jMenuItemAnaliseLexicaActionPerformed
 
     private void jMenuItemSalvarArquivoComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalvarArquivoComoActionPerformed
@@ -230,6 +255,27 @@ public class JMain extends javax.swing.JFrame {
         String texto = ControlArquivo.abrirArquivo();
         criarNovoArquivo(texto);
     }//GEN-LAST:event_jMenuItemAbrirArquivoActionPerformed
+
+    private void jMenuItemAnaliseSintaticaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAnaliseSintaticaActionPerformed
+        
+        analiseLexica();
+        List<Token> tokens = analisadorLexico.getTokens();
+        List<Erro> errosLexicos = analisadorLexico.getErros();
+
+        if (errosLexicos.isEmpty()) {
+            analisadorSintatico = new ControlAnalisadorSintatico(tokens);
+            analisadorSintatico.analiseSintatica();
+
+            List<PassoSintatico> passos = analisadorSintatico.getPassos();
+            List<Erro> errosSintaticos = analisadorSintatico.getListaErros();
+
+            exibeErros(errosSintaticos);
+            exibePassosNaTabela(passos);
+        } else {
+            JOptionPane.showMessageDialog(this, "Corrija os erros léxicos antes da análise sintática!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jMenuItemAnaliseSintaticaActionPerformed
+
 
     private void inicializaTabelaLexemas() {
         tabelaLexemas.limpaTabela();
@@ -254,11 +300,11 @@ public class JMain extends javax.swing.JFrame {
 
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
-        
+
         // Criando o painel do título da aba com o botão de fechar
         JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         tabPanel.setOpaque(false);
-        
+
         JLabel titleLabel = new JLabel(nomeAba);
         JButton closeButton = new JButton("x");
         closeButton.setMargin(new Insets(0, 2, 0, 2));
@@ -282,7 +328,7 @@ public class JMain extends javax.swing.JFrame {
         tabPanel.add(closeButton);
 
         // Definir o painel como título da aba
-        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane), tabPanel); 
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane), tabPanel);
     }
 
     private void criarNovoArquivo(String texto) {
@@ -298,11 +344,11 @@ public class JMain extends javax.swing.JFrame {
 
         String nomeAba = "Arquivo " + contadorArquivos++;
         tabbedPane.addTab(nomeAba, scrollPane);
-        
+
         // Criando o painel do título da aba com o botão de fechar
         JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         tabPanel.setOpaque(false);
-        
+
         JLabel titleLabel = new JLabel(nomeAba);
         JButton closeButton = new JButton("x");
         closeButton.setMargin(new Insets(0, 2, 0, 2));
@@ -381,6 +427,27 @@ public class JMain extends javax.swing.JFrame {
         doc.setCharacterAttributes(inicio, fim - inicio, estilo, false);
     }
 
+    private void exibePassosNaTabela(List<PassoSintatico> passos) {
+    String[] colunas = { "Pilha", "Símbolo Atual", "Ação" };
+    String[][] dados = new String[passos.size()][3];
+
+    for (int i = 0; i < passos.size(); i++) {
+        PassoSintatico p = passos.get(i);
+        dados[i][0] = p.getPilha();
+        dados[i][1] = p.getLookahead();
+        dados[i][2] = p.getAcao();
+    }
+
+    JTable tabela = new JTable(dados, colunas);
+    JScrollPane scrollPane = new JScrollPane(tabela);
+    jPanelPassosAnalisador.removeAll();
+    jPanelPassosAnalisador.setLayout(new BorderLayout());
+    jPanelPassosAnalisador.add(scrollPane, BorderLayout.CENTER);
+    jPanelPassosAnalisador.revalidate();
+    jPanelPassosAnalisador.repaint();
+}
+
+    
     private void exibeErros(List<Erro> erros) {
         limparLogs();
         if (erros.isEmpty()) {
@@ -402,16 +469,15 @@ public class JMain extends javax.swing.JFrame {
         // Adiciona a descrição do erro ao final do textArea
         textAreaLogsCompilacao.append(erro.toString() + "\n");
     }
-    
-    private void limparLogs() {
-    // Recupera o JScrollPane
-    JScrollPane jScrollPaneLogsCompilacao = (JScrollPane) jPanelLogsCompilacao.getComponent(0);
-    // Recupera o JTextArea
-    JTextArea textAreaLogsCompilacao = (JTextArea) jScrollPaneLogsCompilacao.getViewport().getView();
-    // Limpa o conteúdo do JTextArea
-    textAreaLogsCompilacao.setText("");
-}
 
+    private void limparLogs() {
+        // Recupera o JScrollPane
+        JScrollPane jScrollPaneLogsCompilacao = (JScrollPane) jPanelLogsCompilacao.getComponent(0);
+        // Recupera o JTextArea
+        JTextArea textAreaLogsCompilacao = (JTextArea) jScrollPaneLogsCompilacao.getViewport().getView();
+        // Limpa o conteúdo do JTextArea
+        textAreaLogsCompilacao.setText("");
+    }
 
     private void mensagemSucesso() {
         // Recuperando o jScrollPanel de logs de compilacao
@@ -430,6 +496,13 @@ public class JMain extends javax.swing.JFrame {
         jTabbedPainelDeSaida.add("Logs de compilação", jPanelLogsCompilacao);
     }
 
+    private void inicializaPassosDaAnalise() {
+        JTextArea textArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        jPanelPassosAnalisador.setLayout(new BorderLayout());
+        jPanelPassosAnalisador.add(scrollPane, BorderLayout.CENTER);
+    }
+
     private void addTokensTabela(List<Token> tokens) {
         if (getTextoAbaAtiva() == null) {
             JOptionPane.showMessageDialog(null, "Caixa de texto vazia!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -438,6 +511,12 @@ public class JMain extends javax.swing.JFrame {
         for (int i = 0; i < tokens.size(); i++) {
             tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(), tokens.get(i).getLinha(), tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
         }
+    }
+
+    private void limparPassos() {
+        JScrollPane jScrollPanePassosAnalisador = (JScrollPane) jPanelPassosAnalisador.getComponent(0);
+        JTextArea textAreaPassosAnalisador = (JTextArea) jScrollPanePassosAnalisador.getViewport().getView();
+        textAreaPassosAnalisador.setText("");
     }
 
     /**
@@ -483,11 +562,13 @@ public class JMain extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuEditar;
     private javax.swing.JMenuItem jMenuItemAbrirArquivo;
     private javax.swing.JMenuItem jMenuItemAnaliseLexica;
+    private javax.swing.JMenuItem jMenuItemAnaliseSintatica;
     private javax.swing.JMenuItem jMenuItemNovoArquivo;
     private javax.swing.JMenuItem jMenuItemSair;
     private javax.swing.JMenuItem jMenuItemSalvarArquivo;
     private javax.swing.JMenuItem jMenuItemSalvarArquivoComo;
     private javax.swing.JPanel jPanelLogsCompilacao;
+    private javax.swing.JPanel jPanelPassosAnalisador;
     private javax.swing.JPanel jPanelPrincipal;
     private javax.swing.JPanel jPanelTabelaLexemas;
     private javax.swing.JPopupMenu.Separator jSeparator1;

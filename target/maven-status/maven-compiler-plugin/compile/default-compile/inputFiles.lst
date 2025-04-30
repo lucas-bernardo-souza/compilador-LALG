@@ -1,9 +1,11 @@
 C:\Unesp\Compiladores\Trabalho\src\main\java\controler\ControlAnalisadorLexico.java
+C:\Unesp\Compiladores\Trabalho\src\main\java\controler\ControlAnalisadorSintatico.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\controler\ControlArquivo.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\model\AbrirArquivo.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\model\AnalisadorLexico.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\model\AnalisadorSintatico.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\model\Erro.java
+C:\Unesp\Compiladores\Trabalho\src\main\java\model\PassoSintatico.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\model\SalvarArquivo.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\model\TabelaSintatica.java
 C:\Unesp\Compiladores\Trabalho\src\main\java\model\Token.java
