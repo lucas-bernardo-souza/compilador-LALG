@@ -470,7 +470,152 @@ public final class TabelaSintatica {
         producoes.put("and", "sinc");
         tabela.put("<fator>", producoes);
         
+        //<variavel>
+        producoes = new HashMap<>();
+        producoes.put(".", "sinc");
+        producoes.put(";", "sinc");
+        producoes.put("procedure", "sinc");
+        producoes.put("begin", "sinc");
+        producoes.put("IDENTIFICADOR", "<identificador> <variavel'>");
+        producoes.put(",", "sinc");
+        producoes.put(")", "sinc");
+        producoes.put("end", "sinc");
+        producoes.put("else", "sinc");
+        producoes.put(":=", "sinc");
+        producoes.put("+", "sinc");
+        producoes.put("-", "sinc");
+        producoes.put("=", "sinc");
+        producoes.put("<>", "sinc");
+        producoes.put("<", "sinc");
+        producoes.put("<=", "sinc");
+        producoes.put("=>", "sinc");
+        producoes.put(">", "sinc");
+        producoes.put("then", "sinc");
+        producoes.put("do", "sinc");
+        producoes.put("]", "sinc");
+        producoes.put("or", "sinc");
+        producoes.put("*", "sinc");
+        producoes.put("div", "sinc");
+        producoes.put("and", "sinc");
+        tabela.put("<variavel>", producoes);
         
+        
+        // <variavel'>
+        producoes = new HashMap<>();
+        producoes.put(".", "ε");
+        producoes.put(";", "ε");
+        producoes.put("procedure", "ε");
+        producoes.put("begin", "ε");
+        producoes.put(",", "ε");
+        producoes.put("(", "( <lista_de_expressoes> )");
+        producoes.put(")", "ε");
+        producoes.put("end", "ε");
+        producoes.put("else", "ε");
+        producoes.put(":=", "ε");
+        producoes.put("+", "ε");
+        producoes.put("-", "ε");
+        producoes.put("=", "ε");
+        producoes.put("<>", "ε");
+        producoes.put("<", "ε");
+        producoes.put("<=", "ε");
+        producoes.put("=>", "ε");
+        producoes.put("then", "ε");
+        producoes.put("do", "ε");
+        producoes.put("]", "ε");
+        producoes.put("or", "ε");
+        producoes.put("*", "ε");
+        producoes.put("div", "ε");
+        producoes.put("and", "ε");
+        producoes.put("[", "[ <expressao> ]");
+        tabela.put("<variavel'>", producoes);
+        
+        // <lista_de_expressoes>
+        producoes = new HashMap<>();
+        producoes.put("IDENTIFICADOR", "<expressao> <lista_de_expressoes'>");
+        producoes.put(",", "<expressao> <lista_de_expressoes'>");
+        producoes.put("(", "<expressao> <lista_de_expressoes'>");
+        producoes.put(")", "ε");
+        producoes.put("+", "<expressao> <lista_de_expressoes'>");
+        producoes.put("-", "<expressao> <lista_de_expressoes'>");
+        producoes.put("NUMERO INTEIRO", "<expressao> <lista_de_expressoes'>");
+        producoes.put("not", "<expressao> <lista_de_expressoes'>");
+        producoes.put("=", "<expressao> <lista_de_expressoes'>");
+        producoes.put("<>", "<expressao> <lista_de_expressoes'>");
+        producoes.put("<", "<expressao> <lista_de_expressoes'>");
+        producoes.put("<=", "<expressao> <lista_de_expressoes'>");
+        producoes.put("=>", "<expressao> <lista_de_expressoes'>");
+        producoes.put(">", "<expressao> <lista_de_expressoes'>");
+        tabela.put("<lista_de_expressoes>", producoes);
+        
+        // <lista_de_expressoes'>
+        producoes = new HashMap<>();
+        producoes.put(",", ", <expressao> <lista_de_expressoes'>");
+        producoes.put(")", "ε");
+        tabela.put("<lista_de_expressoes'>", producoes);
+        
+        // <numero>
+        producoes = new HashMap<>();
+        producoes.put(".", "sinc");
+        producoes.put(";", "sinc");
+        producoes.put("procedure", "sinc");
+        producoes.put("begin", "sinc");
+        producoes.put(",", "sinc");
+        producoes.put(")", "sinc");
+        producoes.put("end", "sinc");
+        producoes.put("else", "sinc");
+        producoes.put("+", "sinc");
+        producoes.put("-", "sinc");
+        producoes.put("NUMERO INTEIRO", "NUMERO INTEIRO");
+        producoes.put("=", "sinc");
+        producoes.put("<>", "sinc");
+        producoes.put("<", "sinc");
+        producoes.put("<=", "sinc");
+        producoes.put("=>", "sinc");
+        producoes.put(">", "sinc");
+        producoes.put("then", "sinc");
+        producoes.put("do", "sinc");
+        producoes.put("]", "sinc");
+        producoes.put("or", "sinc");
+        producoes.put("*", "sinc");
+        producoes.put("div", "sinc");
+        producoes.put("and", "sinc");
+        tabela.put("<numero>", producoes);
+        
+        // <identificador>
+        producoes = new HashMap<>();
+        producoes.put("int", "sinc");
+        producoes.put("boolean", "sinc");
+        producoes.put(".", "sinc");
+        producoes.put(";", "sinc");
+        producoes.put("procedure", "sinc");
+        producoes.put("begin", "sinc");
+        producoes.put("IDENTIFICADOR", "IDENTIFICADOR");
+        producoes.put(":", "sinc");
+        producoes.put(",","sinc");
+        producoes.put("(", "sinc");
+        producoes.put(")", "sinc");
+        producoes.put("end", "sinc");
+        producoes.put("else", "sinc");
+        producoes.put(":=", "sinc");
+        producoes.put("+", "sinc");
+        producoes.put("-", "sinc");
+        producoes.put("NUMERO INTEIRO", "sinc");
+        producoes.put("not", "sinc");
+        producoes.put("=", "sinc");
+        producoes.put("<>", "sinc");
+        producoes.put("<", "sinc");
+        producoes.put("<=", "sinc");
+        producoes.put("=>", "sinc");
+        producoes.put(">", "sinc");
+        producoes.put("then", "sinc");
+        producoes.put("do", "sinc");
+        producoes.put("]", "sinc");
+        producoes.put("or", "sinc");
+        producoes.put("*", "sinc");
+        producoes.put("div", "sinc");
+        producoes.put("and", "sinc");
+        producoes.put("[", "sinc");
+        tabela.put("<identificador>", producoes);
         
     }
 }
