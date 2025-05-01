@@ -13,12 +13,12 @@ import java.util.Stack;
  */
 public class AnalisadorSintatico {
 
-    private Stack<String> pilha = new Stack<>();
-    private List<Token> tokens;
-    private Map<String, Map<String, String>> tabela;
+    private final Stack<String> pilha = new Stack<>();
+    private final List<Token> tokens;
+    private final Map<String, Map<String, String>> tabela;
     private int ponteiro = 0;
-    private List<PassoSintatico> passos = new ArrayList<>();
-    private List<Erro> listaErros = new ArrayList<>();
+    private final List<PassoSintatico> passos = new ArrayList<>();
+    private final List<Erro> listaErros = new ArrayList<>();
 
     public AnalisadorSintatico(List<Token> tokens, TabelaSintatica tabelaSintatica) {
         this.tokens = tokens;
@@ -90,7 +90,7 @@ public class AnalisadorSintatico {
                         continue;
                     }
                     String producao;
-                    if (lookahead.getToken() == "IDENTIFICADOR") {
+                    if (lookahead.getToken().equals("IDENTIFICADOR")) {
                         producao = producoes.get("IDENTIFICADOR");
                     } else {
                         producao = producoes.get(lookahead.getLexema());
