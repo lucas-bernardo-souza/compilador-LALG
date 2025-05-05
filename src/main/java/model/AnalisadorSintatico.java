@@ -56,7 +56,7 @@ public class AnalisadorSintatico {
                     Erro erro = new Erro(
                             "Token inesperado",
                             "Sintática",
-                            "Esperava '" + topo + "', mas encontrou '" + lookahead.getLexema() + "'",
+                            "A linguagem esperava o token '" + topo + "'. Mas, encontrou '" + lookahead.getLexema() + "'.",
                             lookahead.getLinha(),
                             lookahead.getColunaInicial()
                     );
@@ -78,9 +78,9 @@ public class AnalisadorSintatico {
                     Map<String, String> producoes = tabela.get(topo);
                     if (producoes == null) {
                         Erro erro = new Erro(
-                                "Não-terminal desconhecido",
+                                "Não-terminal desconhecido!",
                                 "Sintática",
-                                "Não existe produção para '" + topo + "'",
+                                "Não existe produção para '" + topo + "'.",
                                 lookahead.getLinha(),
                                 lookahead.getColunaInicial()
                         );
@@ -97,9 +97,9 @@ public class AnalisadorSintatico {
                     }
                     if (producao == null) {
                         Erro erro = new Erro(
-                                "Produção ausente",
+                                "Produção inexistente!",
                                 "Sintática",
-                                "Nenhuma produção para '" + topo + "' com lookahead '" + lookahead.getLexema() + "'",
+                                "Não existe nenhuma produção para o não terminal: '" + topo + "' com lookahead '" + lookahead.getLexema() + "'.",
                                 lookahead.getLinha(),
                                 lookahead.getColunaInicial()
                         );

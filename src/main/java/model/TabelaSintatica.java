@@ -616,6 +616,5 @@ public final class TabelaSintatica {
         producoes.put("and", "sinc");
         producoes.put("[", "sinc");
         tabela.put("<identificador>", producoes);
-        
     }
 }
