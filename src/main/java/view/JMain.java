@@ -77,6 +77,8 @@ public class JMain extends javax.swing.JFrame {
         jMenuCompilar = new javax.swing.JMenu();
         jMenuItemAnaliseLexica = new javax.swing.JMenuItem();
         jMenuItemAnaliseSintatica = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemVisualizarGramatica = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -186,6 +188,15 @@ public class JMain extends javax.swing.JFrame {
             }
         });
         jMenuCompilar.add(jMenuItemAnaliseSintatica);
+        jMenuCompilar.add(jSeparator3);
+
+        jMenuItemVisualizarGramatica.setText("Visualizar gramática");
+        jMenuItemVisualizarGramatica.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemVisualizarGramaticaActionPerformed(evt);
+            }
+        });
+        jMenuCompilar.add(jMenuItemVisualizarGramatica);
 
         jMenuBar1.add(jMenuCompilar);
 
@@ -275,6 +286,11 @@ public class JMain extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Corrija os erros léxicos antes da análise sintática!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jMenuItemAnaliseSintaticaActionPerformed
+
+    private void jMenuItemVisualizarGramaticaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemVisualizarGramaticaActionPerformed
+        // TODO add your handling code here:
+        //TabelaSintatica tabelaSintatica = new TabelaSintatica();
+    }//GEN-LAST:event_jMenuItemVisualizarGramaticaActionPerformed
 
 
     private void inicializaTabelaLexemas() {
@@ -567,12 +583,14 @@ public class JMain extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemSair;
     private javax.swing.JMenuItem jMenuItemSalvarArquivo;
     private javax.swing.JMenuItem jMenuItemSalvarArquivoComo;
+    private javax.swing.JMenuItem jMenuItemVisualizarGramatica;
     private javax.swing.JPanel jPanelLogsCompilacao;
     private javax.swing.JPanel jPanelPassosAnalisador;
     private javax.swing.JPanel jPanelPrincipal;
     private javax.swing.JPanel jPanelTabelaLexemas;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JTabbedPane jTabbedPainelDeSaida;
     // End of variables declaration//GEN-END:variables
 }
