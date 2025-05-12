@@ -146,7 +146,7 @@ public final class TabelaSintatica {
         producoes.put("and", "sinc");
         producoes.put("else", "sinc");
         producoes.put("if", "<comando_condicional_1>");
-        producoes.put("while", "<comando_repetitivo_1" );
+        producoes.put("while", "<comando_repetitivo_1>" );
         tabela.put("<comando>", producoes);
         
         // <comando'>
@@ -155,15 +155,15 @@ public final class TabelaSintatica {
         producoes.put(".", "sinc");
         producoes.put(";", "sinc");
         producoes.put("procedure", "sinc");
-        producoes.put("(", "( <chamada_de_procedimento>");
+        producoes.put("(", "( <chamada_de_procedimento> )");
         producoes.put("and","sinc");
         producoes.put("else", "sinc");
-        producoes.put(":=", ":= <expressão>");
+        producoes.put(":=", ":= <expressao>");
         tabela.put("<comando'>", producoes);
         
         // <atribuicao
         producoes = new HashMap<>();
-        producoes.put("IDENTIFICADOR", "<identificador> := <expressão>");
+        producoes.put("IDENTIFICADOR", "<identificador> := <expressao>");
         tabela.put("<atribuicao>", producoes);
         
         // <chamada_de_procedimento>
@@ -185,7 +185,7 @@ public final class TabelaSintatica {
         producoes.put("else", "ε");
         producoes.put("+", "<lista_de_expressoes> )");
         producoes.put("-", "<lista_de_expressoes> )");
-        producoes.put("NUMERO INTEIRO", "<lista_de_expressoes> )");
+        producoes.put("NUMERO_INTEIRO", "<lista_de_expressoes> )");
         producoes.put("not", "<lista_de_expressoes> )");
         producoes.put("=", "<lista_de_expressoes> )");
         producoes.put("<>","<lista_de_expressoes> )");
@@ -241,7 +241,7 @@ public final class TabelaSintatica {
         producoes.put("else", "ε");
         producoes.put("+", "<expressao_simples> <expressao'>");
         producoes.put("-", "<expressao_simples> <expressao'>");
-        producoes.put("NUMERO INTEIRO", "<expressao_simples> <expressao'>");
+        producoes.put("NUMERO_INTEIRO", "<expressao_simples> <expressao'>");
         producoes.put("not", "<expressao_simples> <expressao'>");
         producoes.put("=", "<expressao_simples> <expressao'>");
         producoes.put("<>", "<expressao_simples> <expressao'>");
@@ -289,7 +289,7 @@ public final class TabelaSintatica {
         producoes.put("else", "sinc");
         producoes.put("+", "sinc");
         producoes.put("-", "sinc");
-        producoes.put("NUMERO INTEIRO", "sinc");
+        producoes.put("NUMERO_INTEIRO", "sinc");
         producoes.put("not", "sinc");
         producoes.put("=", "=");
         producoes.put("<>", "<>");
@@ -316,7 +316,7 @@ public final class TabelaSintatica {
         producoes.put("else", "ε");
         producoes.put("+", "<op> <termo> <expressao_simples'>");
         producoes.put("-", "<op> <termo> <expressao_simples'>");
-        producoes.put("NUMERO INTEIRO", "<op> <termo> <expressao_simples'>");
+        producoes.put("NUMERO_INTEIRO", "<op> <termo> <expressao_simples'>");
         producoes.put("not", "<op> <termo> <expressao_simples'>");
         producoes.put("=", "ε");
         producoes.put("<>", "ε");
@@ -335,7 +335,7 @@ public final class TabelaSintatica {
         producoes.put("(", "ε");
         producoes.put("+", "+");
         producoes.put("-", "-");
-        producoes.put("NUMERO INTEIRO", "ε");
+        producoes.put("NUMERO_INTEIRO", "ε");
         producoes.put("not", "ε");
         tabela.put("<op>", producoes);
         
@@ -369,7 +369,7 @@ public final class TabelaSintatica {
         producoes.put("(", "sinc");
         producoes.put("+", "+");
         producoes.put("-", "-");
-        producoes.put("NUMERO INTEIRO", "sinc");
+        producoes.put("NUMERO_INTEIRO", "sinc");
         producoes.put("not", "sinc");
         producoes.put("or", "or");
         tabela.put("<op2>", producoes);
@@ -388,8 +388,8 @@ public final class TabelaSintatica {
         producoes.put("else", "sinc");
         producoes.put("+", "sinc");
         producoes.put("-", "sinc");
-        producoes.put("NUMERO INTEIRO", "<fator><termo'>" );
-        producoes.put("not", "<fator><termo'>");
+        producoes.put("NUMERO_INTEIRO", "<fator> <termo'>" );
+        producoes.put("not", "<fator> <termo'>");
         producoes.put("=", "sinc");
         producoes.put("<>", "sinc");
         producoes.put("<", "sinc");
@@ -423,16 +423,16 @@ public final class TabelaSintatica {
         producoes.put("do", "ε");
         producoes.put("]", "ε");
         producoes.put("or", "ε");
-        producoes.put("*", "<op3><fator><termo'>");
-        producoes.put("div", "<op3><fator><termo'>");
-        producoes.put("and", "<op3><fator><termo'>");
+        producoes.put("*", "<op3> <fator> <termo'>");
+        producoes.put("div", "<op3> <fator> <termo'>");
+        producoes.put("and", "<op3> <fator> <termo'>");
         tabela.put("<termo'>", producoes);
         
         // <op3>
         producoes = new HashMap<>();
         producoes.put("IDENTIFICADOR", "sinc");
         producoes.put("(", "sinc");
-        producoes.put("NUMERO INTEIRO", "sinc");
+        producoes.put("NUMERO_INTEIRO", "sinc");
         producoes.put("not", "sinc");
         producoes.put("*", "*");
         producoes.put("div", "div");
@@ -453,7 +453,7 @@ public final class TabelaSintatica {
         producoes.put("else", "sinc");
         producoes.put("+", "sinc");
         producoes.put("-", "sinc");
-        producoes.put("NUMERO INTEIRO", "<numero>");
+        producoes.put("NUMERO_INTEIRO", "<numero>");
         producoes.put("not", "not <fator>");
         producoes.put("=", "sinc");
         producoes.put("<>", "sinc");
@@ -537,7 +537,7 @@ public final class TabelaSintatica {
         producoes.put(")", "ε");
         producoes.put("+", "<expressao> <lista_de_expressoes'>");
         producoes.put("-", "<expressao> <lista_de_expressoes'>");
-        producoes.put("NUMERO INTEIRO", "<expressao> <lista_de_expressoes'>");
+        producoes.put("NUMERO_INTEIRO", "<expressao> <lista_de_expressoes'>");
         producoes.put("not", "<expressao> <lista_de_expressoes'>");
         producoes.put("=", "<expressao> <lista_de_expressoes'>");
         producoes.put("<>", "<expressao> <lista_de_expressoes'>");
@@ -565,7 +565,7 @@ public final class TabelaSintatica {
         producoes.put("else", "sinc");
         producoes.put("+", "sinc");
         producoes.put("-", "sinc");
-        producoes.put("NUMERO INTEIRO", "NUMERO INTEIRO");
+        producoes.put("NUMERO_INTEIRO", "NUMERO_INTEIRO");
         producoes.put("=", "sinc");
         producoes.put("<>", "sinc");
         producoes.put("<", "sinc");
@@ -599,7 +599,7 @@ public final class TabelaSintatica {
         producoes.put(":=", "sinc");
         producoes.put("+", "sinc");
         producoes.put("-", "sinc");
-        producoes.put("NUMERO INTEIRO", "sinc");
+        producoes.put("NUMERO_INTEIRO", "sinc");
         producoes.put("not", "sinc");
         producoes.put("=", "sinc");
         producoes.put("<>", "sinc");

@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Analisador sintático - com passo a passo e erros formatados usando a classe
- * Erro
  *
  * @author saraa
  */
@@ -43,7 +41,7 @@ public class AnalisadorSintatico {
             String topo = pilha.peek();
 
             if (isTerminal(topo) || topo.equals("$")) {
-                if (topo.equals(lookahead.getLexema())) {
+                if (topo.equals(lookahead.getLexema()) || (topo.equals("NUMERO_INTEIRO") && lookahead.getToken().equals("NUMERO_INTEIRO"))) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
                     pilha.pop();
                     ponteiro++;
@@ -56,12 +54,12 @@ public class AnalisadorSintatico {
                     Erro erro = new Erro(
                             "Token inesperado",
                             "Sintática",
-                            "A linguagem esperava o token '" + topo + "'. Mas, encontrou '" + lookahead.getLexema() + "'.",
+                            "Erro: A linguagem esperava o token '" + topo + "'. Mas, encontrou '" + lookahead.getLexema() + "'.",
                             lookahead.getLinha(),
                             lookahead.getColunaInicial()
                     );
                     listaErros.add(erro);
-                    passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: esperava '" + topo + "'"));
+                    passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: A linguagem esperava o token '" + topo + "'. Mas, encontrou '" + lookahead.getLexema() + "'."));
                     pilha.pop(); // Regra: remove o topo
                 }
             } else {
@@ -80,7 +78,7 @@ public class AnalisadorSintatico {
                         Erro erro = new Erro(
                                 "Não-terminal desconhecido!",
                                 "Sintática",
-                                "Não existe produção para '" + topo + "'.",
+                                "Erro: O símbolo '" + topo + "' não pertence à gramática",
                                 lookahead.getLinha(),
                                 lookahead.getColunaInicial()
                         );
@@ -92,6 +90,8 @@ public class AnalisadorSintatico {
                     String producao;
                     if (lookahead.getToken().equals("IDENTIFICADOR")) {
                         producao = producoes.get("IDENTIFICADOR");
+                    } else if (lookahead.getToken().equals("NUMERO_INTEIRO")) {
+                        producao = producoes.get("NUMERO_INTEIRO");
                     } else {
                         producao = producoes.get(lookahead.getLexema());
                     }
@@ -99,29 +99,13 @@ public class AnalisadorSintatico {
                         Erro erro = new Erro(
                                 "Produção inexistente!",
                                 "Sintática",
-                                "Não existe nenhuma produção para o não terminal: '" + topo + "' com lookahead '" + lookahead.getLexema() + "'.",
+                                "Erro: Símbolo inesperado: '" + lookahead.getLexema() + "' . Símbolo(s) esperado(s): " + producoes.keySet() + ".",
                                 lookahead.getLinha(),
                                 lookahead.getColunaInicial()
                         );
                         listaErros.add(erro);
-                        passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")",   "Erro: Nenhuma produção para '" + topo + "' com lookahead '" + lookahead.getLexema() + "'"));
+                        passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: Símbolo inesperado: '" + lookahead.getLexema() + "' . Símbolo(s) esperado(s): " + producoes.keySet() + "."));
 
-                        ponteiro++;
-                        if (ponteiro < tokens.size()) {
-                            lookahead = tokens.get(ponteiro);
-                        } else {
-                            lookahead = new Token("$", "$", 0, 0, 0);
-                        }
-                    } else if (producao.equals("erro")) {
-                        Erro erro = new Erro(
-                                "Erro grave",
-                                "Sintática",
-                                "Produção inválida para '" + topo + "' com token '" + lookahead.getLexema() + "'",
-                                lookahead.getLinha(),
-                                lookahead.getColunaInicial()
-                        );
-                        listaErros.add(erro);
-                        passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: Produção inválida para '" + topo + "' com token '" + lookahead.getLexema() + "'"));
                         ponteiro++;
                         if (ponteiro < tokens.size()) {
                             lookahead = tokens.get(ponteiro);
@@ -132,13 +116,13 @@ public class AnalisadorSintatico {
                         Erro erro = new Erro(
                                 "Sincronização",
                                 "Sintática",
-                                "Sincronizando ao remover '" + topo + "'",
+                                "Erro: Não foi encontrada produção para '" + lookahead.getLexema() + "' nessa posição. O símbolo " + topo + " será removido da pilha",
                                 lookahead.getLinha(),
                                 lookahead.getColunaInicial()
                         );
-                        
+
                         listaErros.add(erro);
-                        passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Sincronizando ao remover '" + topo + "'"));
+                        passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: Não foi encontrada produção para '" + lookahead.getLexema() + "' nessa posição. O símbolo " + topo + " será removido da pilha"));
 
                         pilha.pop();
                     } else if (producao.equals("ε")) {
@@ -156,9 +140,7 @@ public class AnalisadorSintatico {
                     }
                 }
             }
-            if (pilha.peek().equals("<parte_de_declarações_de_sub-rotinas>")) {
-                break;
-            }
+
         }
 
         if (listaErros.isEmpty()) {
@@ -170,7 +152,10 @@ public class AnalisadorSintatico {
     }
 
     private boolean isTerminal(String simbolo) {
-        return !simbolo.startsWith("<") && !simbolo.equals("ε");
+        if (!simbolo.equals("<>") && !simbolo.equals("<")) {
+            return !simbolo.startsWith("<") && !simbolo.equals("ε");
+        }
+        return true;
     }
 
     private String pilhaString() {
