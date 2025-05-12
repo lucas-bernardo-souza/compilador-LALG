@@ -4,10 +4,12 @@ view\PainelNumeroLinhas$1.class
 controler\ControlAnalisadorSintatico.class
 view\PainelNumeroLinhas.class
 view\JMain$1.class
+view\JMain$7.class
 view\TabelaLexemas.class
 model\TabelaSintatica.class
 view\JMain$5.class
 view\JMain$2.class
+view\TabelaSintatica.class
 controler\ControlAnalisadorLexico.class
 view\JMain$6.class
 model\AnalisadorSintatico.class
