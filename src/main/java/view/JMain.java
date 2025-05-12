@@ -14,6 +14,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,9 +24,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import model.Erro;
 import model.PassoSintatico;
 import model.Token;
@@ -290,6 +288,11 @@ public class JMain extends javax.swing.JFrame {
     private void jMenuItemVisualizarGramaticaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemVisualizarGramaticaActionPerformed
         // TODO add your handling code here:
         //TabelaSintatica tabelaSintatica = new TabelaSintatica();
+        List<Token> tokens = analisadorLexico.getTokens();
+        analisadorSintatico = new ControlAnalisadorSintatico(tokens);
+        Map<String, Map<String, String>> tabela = analisadorSintatico.getTabela();
+        JTable tabelaJtable = Gramatica.gramatica(tabela);
+        
     }//GEN-LAST:event_jMenuItemVisualizarGramaticaActionPerformed
 
 
@@ -402,47 +405,6 @@ public class JMain extends javax.swing.JFrame {
         return null;
     }
 
-    private static int getPosicaoLinha(String texto, int linha) {
-        if (linha == 0) {
-            return 0; // A primeira linha começa no índice 0
-        }
-        int posicao = -1; // Começa antes do início do texto
-        int contadorLinhas = 0;
-        while (contadorLinhas < linha - 2) {
-            posicao = texto.indexOf("\n", posicao + 1);
-            if (posicao == -1) {
-                return -1;
-            }
-            contadorLinhas++;
-        }
-        return posicao + 1; // Retorna o início da linha correta
-    }
-
-    private void pintarLinha(int linha) {
-        int abaSelecionada = tabbedPane.getSelectedIndex();
-        JTextPane textPane = new JTextPane();
-        if (abaSelecionada != -1) {
-            JScrollPane scrollPane = (JScrollPane) tabbedPane.getComponentAt(abaSelecionada);
-            textPane = (JTextPane) scrollPane.getViewport().getView();
-        }
-
-        StyledDocument doc = textPane.getStyledDocument();
-        String texto = textPane.getText();
-
-        int inicio = getPosicaoLinha(texto, linha);
-        int fim = getPosicaoLinha(texto, linha + 1);
-        //int fim = texto.indexOf("\n", inicio);
-        //if(fim == -1) fim = texto.length();
-
-        // Criando um estilo para fundo colorido
-        SimpleAttributeSet estilo = new SimpleAttributeSet();
-        StyleConstants.setBackground(estilo, Color.RED);
-        StyleConstants.setForeground(estilo, Color.WHITE);
-
-        // Aplicando o estilo ao intervalo de texto
-        doc.setCharacterAttributes(inicio, fim - inicio, estilo, false);
-    }
-
     private void exibePassosNaTabela(List<PassoSintatico> passos) {
     String[] colunas = { "Pilha", "Símbolo Atual", "Ação" };
     String[][] dados = new String[passos.size()][3];
@@ -527,12 +489,6 @@ public class JMain extends javax.swing.JFrame {
         for (int i = 0; i < tokens.size(); i++) {
             tabelaLexemas.addToken(tokens.get(i).getLexema(), tokens.get(i).getToken(), tokens.get(i).getLinha(), tokens.get(i).getColunaInicial(), tokens.get(i).getColunaFinal());
         }
-    }
-
-    private void limparPassos() {
-        JScrollPane jScrollPanePassosAnalisador = (JScrollPane) jPanelPassosAnalisador.getComponent(0);
-        JTextArea textAreaPassosAnalisador = (JTextArea) jScrollPanePassosAnalisador.getViewport().getView();
-        textAreaPassosAnalisador.setText("");
     }
 
     /**

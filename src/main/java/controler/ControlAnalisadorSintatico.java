@@ -10,6 +10,7 @@ package controler;
  */
     
 import java.util.List;
+import java.util.Map;
 import model.TabelaSintatica;
 import model.AnalisadorSintatico;
 import model.Erro;
@@ -43,6 +44,13 @@ public class ControlAnalisadorSintatico {
             return analisadorSintatico.getListaErros();
         }
         return List.of();
+    }
+    
+    public Map<String, Map<String, String>> getTabela(){
+        if(analisadorSintatico != null){
+            return analisadorSintatico.getTabela();
+        }
+        return null;
     }
 }
 

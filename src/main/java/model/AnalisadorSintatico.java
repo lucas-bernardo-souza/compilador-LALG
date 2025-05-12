@@ -30,6 +30,10 @@ public class AnalisadorSintatico {
     public List<Erro> getListaErros() {
         return listaErros;
     }
+    
+    public Map<String, Map<String, String>> getTabela(){
+        return tabela;
+    }
 
     public void analisar() {
         pilha.push("$");
