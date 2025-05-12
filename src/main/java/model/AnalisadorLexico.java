@@ -217,7 +217,7 @@ public class AnalisadorLexico {
             } else if(lexema.matches(operadorLogicoNot)){
                 tipo = "OPERADOR LOGICO NOT";
             } else if(lexema.matches(numeroInteiro)){
-                tipo = "NUMERO INTEIRO";
+                tipo = "NUMERO_INTEIRO";
             } else if(lexema.matches(numeroReal)){
                 tipo = "NUMERO REAL";
             } else if(lexema.matches(numeroReal_)){
@@ -285,7 +285,7 @@ public class AnalisadorLexico {
                     errosEncontrados.add(erroNumero);
                 }
             }
-             if("NUMERO INTEIRO".equals(token.getToken())){
+             if("NUMERO_INTEIRO".equals(token.getToken())){
                  String lexema = token.getLexema();
                  double limite = 2147483648.0;
                  if(Double.valueOf(lexema) < -limite || Double.valueOf(lexema) > limite){
