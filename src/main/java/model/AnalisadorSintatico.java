@@ -41,7 +41,7 @@ public class AnalisadorSintatico {
             String topo = pilha.peek();
 
             if (isTerminal(topo) || topo.equals("$")) {
-                if (topo.equals(lookahead.getLexema()) || (topo.equals("NUMERO_INTEIRO") && lookahead.getToken().equals("NUMERO_INTEIRO"))) {
+                if (topo.equals(lookahead.getLexema())) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
                     pilha.pop();
                     ponteiro++;
@@ -64,6 +64,15 @@ public class AnalisadorSintatico {
                 }
             } else {
                 if (topo.equals("<identificador>") && lookahead.getToken().equals("IDENTIFICADOR")) {
+                    passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
+                    pilha.pop();
+                    ponteiro++;
+                    if (ponteiro < tokens.size()) {
+                        lookahead = tokens.get(ponteiro);
+                    } else {
+                        lookahead = new Token("$", "$", 0, 0, 0);
+                    }
+                } else if(topo.equals("<numero>") && lookahead.getToken().equals("NUMERO_INTEIRO")) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
                     pilha.pop();
                     ponteiro++;
