@@ -35,7 +35,7 @@ public class AnalisadorLexico {
     private static final String palavraReservadaEnd = "\\b(end)\\b";
     private static final String palavraReservadaIf = "\\b(if)\\b";
     private static final String palavraReservadaThen = "\\b(then)\\b";
-    private static final String palavraReservadaElse = "\\b (else)\\b";
+    private static final String palavraReservadaElse = "\\b(else)\\b";
     private static final String palavraReservadaWhile = "\\b(while)\\b";
     private static final String palavraReservadaDo = "\\b(do)\\b";
     private static final String procedimentoDeLeitura = "\\b(read)\\b";

@@ -138,6 +138,8 @@ public final class TabelaSintatica {
         producoes.put("else", "sinc");
         producoes.put("if", "<comando_condicional_1>");
         producoes.put("while", "<comando_repetitivo_1>");
+        producoes.put("write", "<comando_escrita>");
+        producoes.put("read", "<comando_leitura>");
         tabela.put("<comando>", producoes);
 
         // <comando'>
@@ -150,6 +152,14 @@ public final class TabelaSintatica {
         producoes.put("else", "sinc");
         producoes.put(":=", "<atribuicao>");
         tabela.put("<comando'>", producoes);
+        
+        producoes = new HashMap<>();
+        producoes.put("write", "write <chamada_de_procedimento>");
+        tabela.put("<comando_escrita>", producoes);
+        
+        producoes = new HashMap<>();
+        producoes.put("read", "read <chamada_de_procedimento>");
+        tabela.put("<comando_leitura>", producoes);
 
         // <atribuicao>
         producoes = new HashMap<>();
@@ -201,6 +211,8 @@ public final class TabelaSintatica {
         //<expressao>
         producoes = new HashMap<>();
         producoes.put("IDENTIFICADOR", "<expressao_simples> <expressao'>");
+        producoes.put("true", "<identificador>");
+        producoes.put("false", "<identificador>");
         producoes.put(",", "sinc");
         producoes.put("(", "<expressao_simples> <expressao'>");
         producoes.put(")", "sinc");
@@ -226,7 +238,7 @@ public final class TabelaSintatica {
         producoes.put("<", "<relacao> <expressao_simples>");
         producoes.put("<=", "<relacao> <expressao_simples>");
         producoes.put(">", "<relacao> <expressao_simples>");
-        producoes.put("=>", "<relacao> <expressao_simples>");
+        producoes.put(">=", "<relacao> <expressao_simples>");
         producoes.put("then", "ε");
         producoes.put("do", "ε");
         tabela.put("<expressao'>", producoes);
@@ -272,7 +284,7 @@ public final class TabelaSintatica {
         producoes.put("<>", "sinc");
         producoes.put("<", "sinc");
         producoes.put("<=", "sinc");
-        producoes.put("=>", "sinc");
+        producoes.put(">=", "sinc");
         producoes.put(">", "sinc");
         producoes.put("then", "sinc");
         producoes.put("do", "sinc");
@@ -304,7 +316,7 @@ public final class TabelaSintatica {
         producoes.put("<>", "ε");
         producoes.put("<", "ε");
         producoes.put("<=", "ε");
-        producoes.put("=>", "ε");
+        producoes.put(">=", "ε");
         producoes.put(">", "ε");
         producoes.put("then", "ε");
         producoes.put("do", "ε");
@@ -342,7 +354,7 @@ public final class TabelaSintatica {
         producoes.put("<>", "sinc");
         producoes.put("<", "sinc");
         producoes.put("<=", "sinc");
-        producoes.put("=>", "sinc");
+        producoes.put(">=", "sinc");
         producoes.put(">", "sinc");
         producoes.put("then", "sinc");
         producoes.put("do", "sinc");
@@ -365,7 +377,8 @@ public final class TabelaSintatica {
         producoes.put("<>", "ε");
         producoes.put("<", "ε");
         producoes.put("<=", "ε");
-        producoes.put("=>", "ε");
+        producoes.put(">=", "ε");
+        producoes.put(">", "ε");
         producoes.put("then", "ε");
         producoes.put("do", "ε");
         producoes.put("or", "ε");
@@ -405,7 +418,7 @@ public final class TabelaSintatica {
         producoes.put("<>", "sinc");
         producoes.put("<", "sinc");
         producoes.put("<=", "sinc");
-        producoes.put("=>", "sinc");
+        producoes.put(">=", "sinc");
         producoes.put(">", "sinc");
         producoes.put("then", "sinc");
         producoes.put("do", "sinc");
@@ -420,6 +433,8 @@ public final class TabelaSintatica {
         // <lista_de_expressoes>
         producoes = new HashMap<>();
         producoes.put("IDENTIFICADOR", "<expressao> <lista_de_expressoes'>");
+        producoes.put("true", "<expressao> <lista_de_expressoes'>");
+        producoes.put("false", "<expressao> <lista_de_expressoes'>");
         producoes.put("(", "<expressao> <lista_de_expressoes'>");
         producoes.put(")", "ε");
         producoes.put("+", "<expressao> <lista_de_expressoes'>");

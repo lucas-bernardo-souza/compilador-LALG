@@ -67,7 +67,7 @@ public class AnalisadorSintatico {
                     pilha.pop(); // Regra: remove o topo
                 }
             } else {
-                if (topo.equals("<identificador>") && lookahead.getToken().equals("IDENTIFICADOR")) {
+                if (topo.equals("<identificador>") && (lookahead.getToken().equals("IDENTIFICADOR") || (lookahead.getLexema().equals("true") || lookahead.getLexema().equals("false")))) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
                     pilha.pop();
                     ponteiro++;
