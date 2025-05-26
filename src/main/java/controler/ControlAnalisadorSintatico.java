@@ -22,6 +22,10 @@ public class ControlAnalisadorSintatico {
     private List<Token> tokens;
     private AnalisadorSintatico analisadorSintatico;
 
+    public ControlAnalisadorSintatico(){
+        TabelaSintatica tabelaSintatica = new TabelaSintatica();
+        analisadorSintatico = new AnalisadorSintatico(tabelaSintatica);
+    }
     public ControlAnalisadorSintatico(List<Token> tokens) {
         this.tokens = tokens;
     }

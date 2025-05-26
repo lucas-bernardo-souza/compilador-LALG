@@ -18,6 +18,11 @@ public class AnalisadorSintatico {
     private final List<PassoSintatico> passos = new ArrayList<>();
     private final List<Erro> listaErros = new ArrayList<>();
 
+    public AnalisadorSintatico(TabelaSintatica tabelaSintatica){
+        this.tabela = tabelaSintatica.tabela;
+        tokens = new ArrayList();
+    }
+    
     public AnalisadorSintatico(List<Token> tokens, TabelaSintatica tabelaSintatica) {
         this.tokens = tokens;
         this.tabela = tabelaSintatica.tabela;

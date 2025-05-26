@@ -1,9 +1,7 @@
 model\SalvarArquivo.class
 view\PainelNumeroLinhas$1.class
 controler\ControlAnalisadorSintatico.class
-view\GramaticaViewTabela.class
 view\JMain$1.class
-view\GramaticaViewTabela$1.class
 view\JMain$6.class
 model\AnalisadorSintatico.class
 view\JMain$3.class

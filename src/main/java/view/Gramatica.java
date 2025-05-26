@@ -14,66 +14,38 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Gramatica {
     public static JTable gramatica(Map<String, Map<String, String>> dados){
-        DefaultTableModel model = new DefaultTableModel() {
+        String[] colunas = {
+          "program", "int", "boolean", ".", ";", "procedure", "begin",
+            "identificador", ":", ",", "(", ")", "var", "end", "else",
+            "if", "while", ":=", "+", "-", "número", "not", "=", "<>",
+            "<", "<=", "=>", ">", "then", "do", "]", "or", "*", "div",
+            "and", "[", "$"
+        };
+        
+        DefaultTableModel model = new DefaultTableModel(){
             @Override
-            public boolean isCellEditable(int row, int column) {
-                // Torna todas as células não editáveis
+            public boolean isCellEditable(int row, int column){
                 return false;
             }
         };
         
-        model.addColumn("program");
-        model.addColumn("int");
-        model.addColumn("boolean");
-        model.addColumn(".");
-        model.addColumn(";");
-        model.addColumn("procedure");
-        model.addColumn("begin");
-        model.addColumn("identificador");
-        model.addColumn(":");
-        model.addColumn(",");
-        model.addColumn("(");
-        model.addColumn(")");
-        model.addColumn("var");
-        model.addColumn("end");
-        model.addColumn("else");
-        model.addColumn("if");
-        model.addColumn("while");
-        model.addColumn(":=");
-        model.addColumn("+");
-        model.addColumn("-");
-        model.addColumn("número");
-        model.addColumn("not");
-        model.addColumn("=");
-        model.addColumn("<>");
-        model.addColumn("<");
-        model.addColumn("<=");
-        model.addColumn("=>");
-        model.addColumn(">");
-        model.addColumn("then");
-        model.addColumn("do");
-        model.addColumn("]");
-        model.addColumn("or");
-        model.addColumn("*");
-        model.addColumn("div");
-        model.addColumn("and");
-        model.addColumn("[");
-        model.addColumn("$");
-        
-         // Preenche o modelo com os dados
-        for (Map.Entry<String, Map<String, String>> entrada : dados.entrySet()) {
-            String chavePrincipal = entrada.getKey();
-            Map<String, String> subMapa = entrada.getValue();
-            
-            for (Map.Entry<String, String> subEntrada : subMapa.entrySet()) {
-                model.addRow(new Object[]{
-                    chavePrincipal,
-                    subEntrada.getKey(),
-                    subEntrada.getValue()
-                });
-            }
+        model.addColumn("Não-terminal");
+        for(String coluna : colunas){
+            model.addColumn(coluna);
         }
         
+        for(Map.Entry<String, Map<String,String>> entrada : dados.entrySet()){
+            String naoTerminal = entrada.getKey();
+            Map<String, String> producoes = entrada.getValue();
+            
+            Object[] linha = new Object[colunas.length + 1];
+            linha[0] = naoTerminal;
+            for(int i = 0; i < colunas.length; i++){
+                String producao = producoes.get(colunas[i]);
+                linha[i + 1] = (producao != null) ? producao : "";
+            }
+            model.addRow(linha);
+        }
         JTable table = new JTable(model);
         return table;
     }
