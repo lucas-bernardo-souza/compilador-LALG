@@ -50,6 +50,7 @@ public class AnalisadorSintatico {
         Token lookahead = tokens.get(ponteiro);
 
         while (!pilha.isEmpty()) {
+            // retorna o topo da pilha sem removê-lo
             String topo = pilha.peek();
 
             if (isTerminal(topo) || topo.equals("$")) {
