@@ -14,7 +14,9 @@ public class AnalisadorSintatico {
     private final Stack<String> pilha = new Stack<>();
     private final List<Token> tokens;
     private final Map<String, Map<String, String>> tabela;
+    // ponteiro para posição atual do símbolo na lista de tokens
     private int ponteiro = 0;
+    // Guarda cada ação da análise sintática
     private final List<PassoSintatico> passos = new ArrayList<>();
     private final List<Erro> listaErros = new ArrayList<>();
 
@@ -43,7 +45,8 @@ public class AnalisadorSintatico {
     public void analisar() {
         pilha.push("$");
         pilha.push("<programa>");
-
+        
+        // ponteiro = 0 primeiro símbolo na lista de tokens
         Token lookahead = tokens.get(ponteiro);
 
         while (!pilha.isEmpty()) {
