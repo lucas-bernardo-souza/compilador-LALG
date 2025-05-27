@@ -13,6 +13,7 @@ public class AnalisadorSintatico {
 
     private final Stack<String> pilha = new Stack<>();
     private final List<Token> tokens;
+    // Map<String, map<String, String>> não terminal / produção
     private final Map<String, Map<String, String>> tabela;
     // ponteiro para posição atual do símbolo na lista de tokens
     private int ponteiro = 0;
@@ -75,6 +76,48 @@ public class AnalisadorSintatico {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: A linguagem esperava o token '" + topo + "'. Mas, encontrou '" + lookahead.getLexema() + "'."));
                     pilha.pop(); // Regra: remove o topo
                 }
+                if (topo.equals("end")) {
+                    if (!lookahead.getLexema().equals("end")) {
+                        Erro erro = new Erro(
+                                "Fechamento ausente",
+                                "Sintática",
+                                "Esperado 'end' para fechar bloco 'begin'",
+                                lookahead.getLinha(),
+                                lookahead.getColunaInicial()
+                        );
+                        listaErros.add(erro);
+
+                        // Sincronização: pula tokens até encontrar ';', 'end' ou '$'
+                        while (!pilha.isEmpty() && !isSincronizador(lookahead.getLexema())) {
+                            ponteiro++;
+                            if (ponteiro < tokens.size()) {
+                                lookahead = tokens.get(ponteiro);
+                            } else {
+                                lookahead = new Token("$", "$", 0, 0, 0);
+                                break;
+                            }
+                        }
+                        pilha.pop(); // Remove 'end' esperado
+                    }
+                }
+                if (topo.equals("begin")) {
+                    pilha.pop(); // Remove 'begin'
+                    pilha.push("end"); // Garante que end será exigido
+                    pilha.push("<comando>");
+                    pilha.push(";");
+                    pilha.push("<comando>");
+
+                    // Força verificação de pelo menos um comando
+                    if (lookahead.getLexema().equals("end")) {
+                        listaErros.add(new Erro(
+                            "Bloco vazio",
+                            "Sintática",
+                            "Bloco 'begin' deve conter pelo menos um comando",
+                            lookahead.getLinha(),
+                            lookahead.getColunaInicial()
+                        ));
+                    }
+                }
             } else {
                 if (topo.equals("<identificador>") && (lookahead.getToken().equals("IDENTIFICADOR") || (lookahead.getLexema().equals("true") || lookahead.getLexema().equals("false")))) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
@@ -95,7 +138,9 @@ public class AnalisadorSintatico {
                         lookahead = new Token("$", "$", 0, 0, 0);
                     }
                 } else {
+                    // A partir de um não terminal acessa suas produções
                     Map<String, String> producoes = tabela.get(topo);
+                    // Se a produção for nula temos um erro e ele é adicionado ao passo sintático.
                     if (producoes == null) {
                         Erro erro = new Erro(
                                 "Não-terminal desconhecido!",
@@ -109,6 +154,7 @@ public class AnalisadorSintatico {
                         pilha.pop();
                         continue;
                     }
+                    //Se existe produção para o não terminal seguimos a análise
                     String producao;
                     if (lookahead.getToken().equals("IDENTIFICADOR")) {
                         producao = producoes.get("IDENTIFICADOR");
@@ -186,6 +232,10 @@ public class AnalisadorSintatico {
             sb.append(s).append(" ");
         }
         return sb.toString().trim();
+    }
+    
+    private boolean isSincronizador(String token) {
+        return token.equals(";") || token.equals("end") || token.equals("$");
     }
 
 }

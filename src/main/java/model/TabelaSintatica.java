@@ -120,6 +120,7 @@ public final class TabelaSintatica {
         producoes.put("begin", "begin <comando> <lista_de_comandos> end");
         producoes.put("end", "sinc");
         producoes.put(";", "sinc");
+        producoes.put("&", "sinc");
         tabela.put("<comando_composto>", producoes);
 
         // <lista_de_comandos>
