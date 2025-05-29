@@ -12,8 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
@@ -469,9 +467,16 @@ public class JMain extends javax.swing.JFrame {
         if (erros.isEmpty()) {
             mensagemSucesso();
         } else {
-            for (Erro erro : erros) {
+            for (int i = 0; i < erros.size(); i++) {
                 //pintarLinha(erro.getLinha());
-                addErro(erro);
+                Erro erroUm = erros.get(i);
+                for(int j = i+1; j < erros.size(); j++){
+                    Erro erroCompara = erros.get(j);
+                    if(erroUm.getNome().equals(erroCompara.getNome())){
+                        erros.remove(erroCompara);
+                    }
+                }
+                addErro(erroUm);
             }
         }
     }
@@ -483,7 +488,13 @@ public class JMain extends javax.swing.JFrame {
         // Recupera o text area
         JTextArea textAreaLogsCompilacao = (JTextArea) jScrollPaneLogsCompilacao.getViewport().getView();
         // Adiciona a descrição do erro ao final do textArea
-        textAreaLogsCompilacao.append(erro.toString() + "\n");
+        String fase = erro.getFase();
+        String descricao = erro.getDescricao();
+        int linha = erro.getLinha();
+        
+        textAreaLogsCompilacao.append("Erro mapeado na fase:" + fase + "\n" +
+                                       "Descrição: " + descricao + "\n" + 
+                                        "Linha: " + linha + "\n" );
     }
 
     private void limparLogs() {

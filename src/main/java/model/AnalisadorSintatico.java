@@ -100,12 +100,18 @@ public class AnalisadorSintatico {
                         pilha.pop(); // Remove 'end' esperado
                     }
                 }
+                if (!pilha.isEmpty() && pilha.peek().equals("end") && lookahead.getLexema().equals("$")) {
+                    listaErros.add(new Erro(
+                        "Fechamento incompleto",
+                        "Sintática",
+                        "Bloco 'begin' não fechado corretamente",
+                        tokens.get(tokens.size()-1).getLinha(),
+                        tokens.get(tokens.size()-1).getColunaInicial()
+                    ));
+                }
                 if (topo.equals("begin")) {
                     pilha.pop(); // Remove 'begin'
-                    pilha.push("end"); // Garante que end será exigido
-                    pilha.push("<comando>");
-                    pilha.push(";");
-                    pilha.push("<comando>");
+                    ponteiro++;
 
                     // Força verificação de pelo menos um comando
                     if (lookahead.getLexema().equals("end")) {
