@@ -59,6 +59,7 @@ public final class TabelaSintatica {
         producoes = new HashMap<>();
         producoes.put("boolean", "<tipo> <lista_de_identificadores>");
         producoes.put("int", "<tipo> <lista_de_identificadores>");
+        producoes.put("$", "ε");
         tabela.put("<declaração_de_variáveis>", producoes);
 
         // <tipo> ::= int | boolean
@@ -120,12 +121,14 @@ public final class TabelaSintatica {
         producoes.put("begin", "begin <comando> <lista_de_comandos> end");
         producoes.put("end", "sinc");
         producoes.put(";", "sinc");
+        producoes.put("$", "sinc");
         tabela.put("<comando_composto>", producoes);
 
         // <lista_de_comandos>
         producoes = new HashMap<>();
         producoes.put(";", "; <comando> <lista_de_comandos>");
         producoes.put("end", "ε");
+        producoes.put("$", "ε");
         tabela.put("<lista_de_comandos>", producoes);
 
         //<comando>
@@ -136,6 +139,7 @@ public final class TabelaSintatica {
         producoes.put("IDENTIFICADOR", "<identificador> <comando'>");
         producoes.put("end", "sinc");
         producoes.put("else", "sinc");
+        producoes.put("$", "sinc");
         producoes.put("if", "<comando_condicional_1>");
         producoes.put("while", "<comando_repetitivo_1>");
         producoes.put("write", "<comando_escrita>");
@@ -150,15 +154,18 @@ public final class TabelaSintatica {
         producoes.put("(", "<chamada_de_procedimento>");
         producoes.put("end", "sinc");
         producoes.put("else", "sinc");
+        producoes.put("$", "sinc");
         producoes.put(":=", "<atribuicao>");
         tabela.put("<comando'>", producoes);
         
         producoes = new HashMap<>();
         producoes.put("write", "write <chamada_de_procedimento>");
+        producoes.put("$", "sinc");
         tabela.put("<comando_escrita>", producoes);
         
         producoes = new HashMap<>();
         producoes.put("read", "read <chamada_de_procedimento>");
+        producoes.put("$", "sinc");
         tabela.put("<comando_leitura>", producoes);
 
         // <atribuicao>
@@ -166,6 +173,7 @@ public final class TabelaSintatica {
         producoes.put(":=", ":= <expressao>");
         producoes.put(";", "sinc");
         producoes.put("end", "sinc");
+        producoes.put("$", "sinc");
         tabela.put("<atribuicao>", producoes);
 
         // <chamada_de_procedimento>
@@ -173,6 +181,7 @@ public final class TabelaSintatica {
         producoes.put("(", "( <lista_de_expressoes> )");
         producoes.put(";", "sinc");
         producoes.put("end", "sinc");
+        producoes.put("$", "sinc");
         tabela.put("<chamada_de_procedimento>", producoes);
 
        
@@ -184,6 +193,7 @@ public final class TabelaSintatica {
         producoes.put("begin", "sinc");
         producoes.put("end", "sinc");
         producoes.put("else", "sinc");
+        producoes.put("$", "sinc");
         producoes.put("if", "if <expressao> then <comando> <else>");
         tabela.put("<comando_condicional_1>", producoes);
 
@@ -194,6 +204,7 @@ public final class TabelaSintatica {
         producoes.put("procedure", "ε");
         producoes.put("begin", "ε");
         producoes.put("end", "ε");
+        producoes.put("$", "ε");
         producoes.put("else", "else <comando>");
         tabela.put("<else>", producoes);
 
@@ -205,6 +216,7 @@ public final class TabelaSintatica {
         producoes.put("begin", "sinc");
         producoes.put("end", "sinc");
         producoes.put("else", "sinc");
+        producoes.put("$", "sinc");
         producoes.put("while", "while <expressao> do <comando>");
         tabela.put("<comando_repetitivo_1>", producoes);
 

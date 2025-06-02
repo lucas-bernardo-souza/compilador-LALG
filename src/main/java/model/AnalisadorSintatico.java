@@ -155,6 +155,7 @@ public class AnalisadorSintatico {
             }
 
         }
+        
 
         if (listaErros.isEmpty()) {
             passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Análise sintática finalisada com sucesso!"));
