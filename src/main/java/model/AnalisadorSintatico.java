@@ -118,8 +118,12 @@ public class AnalisadorSintatico {
                         );
                         listaErros.add(erro);
                         passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: Símbolo inesperado: '" + lookahead.getLexema() + "' . Símbolo(s) esperado(s): " + producoes.keySet() + "."));
-
+                        
                         ponteiro++;
+                        // incrementa até o lexema que realiza a sincronização
+                        while(!tokens.get(ponteiro).getLexema().equals(";")){
+                            ponteiro++;
+                        }
                         if (ponteiro < tokens.size()) {
                             lookahead = tokens.get(ponteiro);
                         } else {
