@@ -227,7 +227,7 @@ public class JMain extends javax.swing.JFrame {
     }
 
     private void jMenuItemNovoArquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNovoArquivoActionPerformed
-
+        limparLogs();
         criarNovoArquivo();
     }//GEN-LAST:event_jMenuItemNovoArquivoActionPerformed
 
@@ -261,6 +261,7 @@ public class JMain extends javax.swing.JFrame {
 
     private void jMenuItemAbrirArquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAbrirArquivoActionPerformed
         // TODO add your handling code here:
+        limparLogs();
         String texto = ControlArquivo.abrirArquivo();
         criarNovoArquivo(texto);
     }//GEN-LAST:event_jMenuItemAbrirArquivoActionPerformed
