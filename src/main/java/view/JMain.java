@@ -8,7 +8,6 @@ import controler.ControlAnalisadorLexico;
 import controler.ControlAnalisadorSintatico;
 import controler.ControlArquivo;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -289,11 +288,10 @@ public class JMain extends javax.swing.JFrame {
     private void jMenuItemVisualizarGramaticaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemVisualizarGramaticaActionPerformed
         // TODO add your handling code here:
         //TabelaSintatica tabelaSintatica = new TabelaSintatica();
-        List<Token> tokens = analisadorLexico.getTokens();
-        analisadorSintatico = new ControlAnalisadorSintatico(tokens);
+        analisadorSintatico = new ControlAnalisadorSintatico();
         Map<String, Map<String, String>> tabela = analisadorSintatico.getTabela();
         JTable tabelaJtable = Gramatica.gramatica(tabela);
-        
+        novaAbaGramatica("Gramática", tabelaJtable);
     }//GEN-LAST:event_jMenuItemVisualizarGramaticaActionPerformed
 
 
@@ -307,7 +305,38 @@ public class JMain extends javax.swing.JFrame {
         // Exibindo a tabela
         jTabbedPainelDeSaida.add("Tabela de lexemas", jPanelTabelaLexemas);
     }
+    
+    private void novaAbaGramatica(String nomeAba, JTable tabelaGramatica){
+        jPanelPrincipal.setLayout(new BorderLayout());
+        jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(tabelaGramatica);
+        tabbedPane.addTab(nomeAba, scrollPane);
+        // Criando o painel do título da aba com o botão de fechar
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        tabPanel.setOpaque(false);
+        JLabel titleLabel = new JLabel(nomeAba);
+        JButton closeButton = new JButton("x");
+        closeButton.setMargin(new Insets(0, 2, 0, 2));
+        closeButton.setFocusable(false);
+        closeButton.setPreferredSize(new Dimension(16, 16));
+        closeButton.setFont(new Font("Arial", Font.BOLD, 10));
+        closeButton.setBorder(BorderFactory.createEmptyBorder());
+        closeButton.setContentAreaFilled(false);
 
+        // Ação para fechar a aba ao clicar no botão
+        closeButton.addActionListener(e -> {
+            int index = tabbedPane.indexOfComponent(scrollPane);
+            if (index != -1) {
+                tabbedPane.remove(index);
+            }
+        });
+        // Adicionando título e botão ao painel da aba
+        tabPanel.add(titleLabel);
+        tabPanel.add(closeButton);
+        // Definir o painel como título da aba
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane), tabPanel);
+    }
+    
     private void criarNovoArquivo() {
         jPanelPrincipal.setLayout(new BorderLayout());
         jPanelPrincipal.add(tabbedPane, BorderLayout.CENTER);

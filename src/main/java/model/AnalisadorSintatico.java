@@ -22,6 +22,11 @@ public class AnalisadorSintatico {
         this.tokens = tokens;
         this.tabela = tabelaSintatica.tabela;
     }
+    
+    public AnalisadorSintatico(TabelaSintatica tabelaSintatica){
+        this.tabela = tabelaSintatica.tabela;
+        this.tokens = new ArrayList<>();
+    }
 
     public List<PassoSintatico> getPassos() {
         return passos;
