@@ -11,12 +11,12 @@ import java.util.Stack;
  */
 public class AnalisadorSintatico {
 
-    private final Stack<String> pilha = new Stack<>();
-    private final List<Token> tokens;
-    private final Map<String, Map<String, String>> tabela;
-    private int ponteiro = 0;
-    private final List<PassoSintatico> passos = new ArrayList<>();
-    private final List<Erro> listaErros = new ArrayList<>();
+    protected final Stack<String> pilha = new Stack<>();
+    protected final List<Token> tokens;
+    protected final Map<String, Map<String, String>> tabela;
+    protected int ponteiro = 0;
+    protected final List<PassoSintatico> passos = new ArrayList<>();
+    protected final List<Erro> listaErros = new ArrayList<>();
 
     public AnalisadorSintatico(List<Token> tokens, TabelaSintatica tabelaSintatica) {
         this.tokens = tokens;
@@ -174,7 +174,7 @@ public class AnalisadorSintatico {
         }
     }
 
-    private boolean isTerminal(String simbolo) {
+    protected boolean isTerminal(String simbolo) {
         if (!simbolo.equals("<>") && !simbolo.equals("<")) {
             return !simbolo.startsWith("<") && !simbolo.equals("ε");
         }
