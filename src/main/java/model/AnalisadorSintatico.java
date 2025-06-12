@@ -182,7 +182,17 @@ public class AnalisadorSintatico {
     }
 
     private void executarAcaoSemantica(String acao, Token lookahead){
+        Simbolo simbolo;
+        TipoDado tipo1, tipo2;
+        
         switch(acao){
+            // Ações de escopo e declaração
+            case "@BEGIN_SCOPE" ->{
+                tabelaDeSimbolos.entrarEscopo();
+            }
+            case "@END_SCOPE" -> {
+                tabelaDeSimbolos.sairEscopo();
+            }
             case "@SET_TYPE" -> {
                 // O token do tipo (int/boolean) foi o último consumido
                 if(tokenAnterior.getToken().equals("NUMERO_INTEIRO")){
@@ -193,10 +203,10 @@ public class AnalisadorSintatico {
             }
             case "@ADD_VAR" -> {
                 // O token do identificador foi o último consumido
-                Simbolo s = new Simbolo(tokenAnterior.getToken(),
+                simbolo = new Simbolo(tokenAnterior.getToken(),
                         ultimoTipoDeclarado, tokenAnterior.getLinha(), 
                         tokenAnterior.getColunaInicial());
-                if(!tabelaDeSimbolos.inserir(s)){
+                if(!tabelaDeSimbolos.inserir(simbolo)){
                     // Erro Semântico: Variável já declarada nesse escopo
                     listaErros.add(new Erro(
                             "Variável duplicada",
@@ -208,6 +218,91 @@ public class AnalisadorSintatico {
                     ));
                 }
             }
+            // Ações de verificação de tipos em expressões
+            case "@PUSH_ID_TYPE" -> {
+                simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getLexema());
+                if(simbolo == null){
+                    listaErros.add(new Erro(
+                            "",
+                            "Semântica",
+                            "Identificador '" + tokenAnterior.getLexema() + 
+                                    "' não declarado.", tokenAnterior.getLinha(),
+                            tokenAnterior.getColunaInicial()
+                    ));
+                    pilhaDeTipos.push(TipoDado.ERRO); 
+                } else {
+                    pilhaDeTipos.push(simbolo.getTipoDado());
+                }
+            }
+            case "@PUSH_INT_TYPE" -> {
+                pilhaDeTipos.push(TipoDado.INT);
+            }
+            case "@PUSH_BOOL_TYPE" -> {
+                pilhaDeTipos.push(TipoDado.BOOLEAN);
+            }
+            // Ações de verificação de operadores
+            case "@CHECK_ARITHMETIC_OP" -> {
+                tipo1 = pilhaDeTipos.pop();
+                tipo2 = pilhaDeTipos.pop();
+                if(!(tipo1 == TipoDado.INT) || !(tipo2 == TipoDado.INT)){
+                    listaErros.add(new Erro(
+                            "",
+                            "Semantíca",
+                            "Tipos incompatíveis para operação aritimética. Esperado: (int, int),"
+                                    + "Encontrado: ("+tipo1.getNome() + ", "+ tipo2.getNome() + ").",
+                            tokenAnterior.getLinha(),
+                            tokenAnterior.getColunaInicial()
+                    ));
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else {
+                    pilhaDeTipos.push(TipoDado.INT);
+                }
+            }
+            case "@CHECK_LOGICAL_OP" -> {
+                tipo1 = pilhaDeTipos.pop();
+                tipo2 = pilhaDeTipos.pop();
+                
+                if(!(tipo1 == TipoDado.BOOLEAN) || !(tipo2 == TipoDado.BOOLEAN)){
+                    listaErros.add(new Erro(
+                            "",
+                            "Semântica",
+                            "Tipos incompatíveis para operações lógicas. Esperado:"
+                                    + " (boolean, boolean), Encontrado: (" +
+                                    tipo2.getNome() + ", " + tipo1.getNome() +
+                                    ").",
+                            tokenAnterior.getLinha(),
+                            tokenAnterior.getColunaInicial()
+                    ));
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else {
+                    pilhaDeTipos.push(TipoDado.BOOLEAN);
+                }
+            }
+            case "@CHECK_RELATIONAL_OP" -> {
+                tipo1 = pilhaDeTipos.pop();
+                tipo2 = pilhaDeTipos.pop();
+                if(!(tipo1.equals(tipo2)) || tipo1 == TipoDado.ERRO){
+                    listaErros.add(new Erro(
+                            "",
+                            "Semântica",
+                            "Tipos incompatíveis para operação relacional: " + 
+                                    tipo2.getNome() + " e " + tipo1.getNome() + ".",
+                            tokenAnterior.getLinha(),
+                            tokenAnterior.getColunaInicial()
+                    ));
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else {
+                    pilhaDeTipos.push(TipoDado.BOOLEAN);
+                }
+            }
+            case "@CHECK_ASSIGN" -> {
+                tipo2 = pilhaDeTipos.pop(); // Tipo da expressão (lado direito)
+                tipo1 = pilhaDeTipos.pop(); // Tipo da variável (lado esquerdo)
+                 if (!tipo1.equals(tipo2)) {
+                     listaErros.add(new Erro("", "Semântica", "Atribuição de tipo incompatível. Não é possível atribuir '" + tipo2 + "' a uma variável do tipo '" + tipo1 + "'.", tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                 }
+            }
+            
         }
     }
     private boolean isTerminal(String simbolo) {
