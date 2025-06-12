@@ -17,7 +17,12 @@ public class AnalisadorSintatico {
     private int ponteiro = 0;
     private final List<PassoSintatico> passos = new ArrayList<>();
     private final List<Erro> listaErros = new ArrayList<>();
-
+    // Analise semantica
+    private final TabelaDeSimbolos tabelaDeSimbolos = new TabelaDeSimbolos();
+    private final Stack<TipoDado> pilhaDeTipos = new Stack<>(); // Para checagem de tipos em expressões
+    private TipoDado ultimoTipoDeclarado; // Guarda o tipo (int/boolean) ao declarar vars
+    private Token tokenAnterior; // Guarda o último token consumido
+    
     public AnalisadorSintatico(List<Token> tokens, TabelaSintatica tabelaSintatica) {
         this.tokens = tokens;
         this.tabela = tabelaSintatica.tabela;
@@ -48,8 +53,11 @@ public class AnalisadorSintatico {
 
         while (!pilha.isEmpty()) {
             String topo = pilha.peek();
-
-            if (isTerminal(topo) || topo.equals("$")) {
+            tokenAnterior = (ponteiro > 0) ? tokens.get(ponteiro -1):null;
+            if(topo.startsWith("@")){
+                pilha.pop();
+                executarAcaoSemantica(topo, lookahead); // Executa ação
+            } else if (isTerminal(topo) || topo.equals("$")) {
                 if (topo.equals(lookahead.getLexema())) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
                     pilha.pop();
@@ -162,7 +170,6 @@ public class AnalisadorSintatico {
                     }
                 }
             }
-
         }
         
 
@@ -174,6 +181,35 @@ public class AnalisadorSintatico {
         }
     }
 
+    private void executarAcaoSemantica(String acao, Token lookahead){
+        switch(acao){
+            case "@SET_TYPE" -> {
+                // O token do tipo (int/boolean) foi o último consumido
+                if(tokenAnterior.getToken().equals("NUMERO_INTEIRO")){
+                    this.ultimoTipoDeclarado = TipoDado.INT;
+                } else {
+                    this.ultimoTipoDeclarado = TipoDado.BOOLEAN;
+                }
+            }
+            case "@ADD_VAR" -> {
+                // O token do identificador foi o último consumido
+                Simbolo s = new Simbolo(tokenAnterior.getToken(),
+                        ultimoTipoDeclarado, tokenAnterior.getLinha(), 
+                        tokenAnterior.getColunaInicial());
+                if(!tabelaDeSimbolos.inserir(s)){
+                    // Erro Semântico: Variável já declarada nesse escopo
+                    listaErros.add(new Erro(
+                            "Variável duplicada",
+                            "Semântica",
+                            "Variável '" + tokenAnterior.getLexema() +
+                                    "' não declarada", 
+                            tokenAnterior.getLinha(),
+                            tokenAnterior.getColunaInicial()
+                    ));
+                }
+            }
+        }
+    }
     private boolean isTerminal(String simbolo) {
         if (!simbolo.equals("<>") && !simbolo.equals("<")) {
             return !simbolo.startsWith("<") && !simbolo.equals("ε");

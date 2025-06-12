@@ -7,7 +7,11 @@ C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\ja
 C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\Erro.java
 C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\PassoSintatico.java
 C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\SalvarArquivo.java
+C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\Simbolo.java
+C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\TabelaDeSimbolos.java
 C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\TabelaSintatica.java
+C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\TipoDado.java
+C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\TipoSimbolo.java
 C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\model\Token.java
 C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\view\Gramatica.java
 C:\Users\Bernardo\Documents\Faculdade\Compiladores\analisador-lexico\src\main\java\view\GramaticaViewTabela.java
