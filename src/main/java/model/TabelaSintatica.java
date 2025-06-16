@@ -57,8 +57,8 @@ public final class TabelaSintatica {
 
         // <declaração_de_variáveis> ::= <tipo> <lista_de_identificadores>
         producoes = new HashMap<>();
-        producoes.put("boolean", "<tipo> <lista_de_identificadores>");
-        producoes.put("int", "<tipo> <lista_de_identificadores>");
+        producoes.put("boolean", "<tipo> @SET_TYPE <lista_de_identificadores>");
+        producoes.put("int", "<tipo> @SET_TYPE <lista_de_identificadores>");
         producoes.put("$", "ε");
         tabela.put("<declaração_de_variáveis>", producoes);
 
@@ -106,7 +106,7 @@ public final class TabelaSintatica {
 
         // <lista_de_identificadores> ::= <identificador> { , <identificador> }
         producoes = new HashMap<>();
-        producoes.put("IDENTIFICADOR", "<identificador> <lista_de_identificadores'>");
+        producoes.put("IDENTIFICADOR", "<identificador> @ADD_VAR <lista_de_identificadores'>");
         tabela.put("<lista_de_identificadores>", producoes);
 
         // <lista_de_identificadores'> ::= ε | , <identificador> <lista_de_identificadores'>
@@ -170,7 +170,7 @@ public final class TabelaSintatica {
 
         // <atribuicao>
         producoes = new HashMap<>();
-        producoes.put(":=", ":= <expressao>");
+        producoes.put(":=", ":= <expressao> @CHECK_ASSIGN");
         producoes.put(";", "sinc");
         producoes.put("end", "sinc");
         producoes.put("$", "sinc");
@@ -416,7 +416,7 @@ public final class TabelaSintatica {
         producoes.put(";", "sinc");
         producoes.put("procedure", "sinc");
         producoes.put("begin", "sinc");
-        producoes.put("IDENTIFICADOR", "<identificador>");
+        producoes.put("IDENTIFICADOR", "<identificador> @PUSH_TYPE_ID");
         producoes.put(",", "sinc");
         producoes.put("(", "( <expressao> )");
         producoes.put(")", "sinc");
