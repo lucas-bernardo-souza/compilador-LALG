@@ -23,6 +23,7 @@ public class AnalisadorSintatico {
     private TipoDado ultimoTipoDeclarado; // Guarda o tipo (int/boolean) ao declarar vars
     private Token tokenAnterior; // Guarda o último token consumido
     
+
     public AnalisadorSintatico(List<Token> tokens, TabelaSintatica tabelaSintatica) {
         this.tokens = tokens;
         this.tabela = tabelaSintatica.tabela;
@@ -180,6 +181,7 @@ public class AnalisadorSintatico {
             passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Análise sintática finalizada com " + listaErros.size() + " erro(s)."));
         }
     }
+
 
     private void executarAcaoSemantica(String acao, Token lookahead){
         Simbolo simbolo;
