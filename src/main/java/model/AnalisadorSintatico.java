@@ -54,10 +54,11 @@ public class AnalisadorSintatico {
 
         while (!pilha.isEmpty()) {
             String topo = pilha.peek();
-            tokenAnterior = (ponteiro > 0) ? tokens.get(ponteiro -1):null;
+            // Guarda o token anterior para dar contexto às açõe semânticas
+            tokenAnterior = (ponteiro > 0 && ponteiro <= tokens.size()) ? tokens.get(ponteiro -1):null;
             if(topo.startsWith("@")){
                 pilha.pop();
-                executarAcaoSemantica(topo, lookahead); // Executa ação
+                executarAcaoSemantica(topo); // Executa ação
             } else if (isTerminal(topo) || topo.equals("$")) {
                 if (topo.equals(lookahead.getLexema())) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
@@ -183,7 +184,7 @@ public class AnalisadorSintatico {
     }
 
 
-    private void executarAcaoSemantica(String acao, Token lookahead){
+    private void executarAcaoSemantica(String acao){
         Simbolo simbolo;
         TipoDado tipo1, tipo2;
         
@@ -197,7 +198,7 @@ public class AnalisadorSintatico {
             }
             case "@SET_TYPE" -> {
                 // O token do tipo (int/boolean) foi o último consumido
-                if(tokenAnterior.getToken().equals("NUMERO_INTEIRO")){
+                if(tokenAnterior.getLexema().equals("int")){
                     this.ultimoTipoDeclarado = TipoDado.INT;
                 } else {
                     this.ultimoTipoDeclarado = TipoDado.BOOLEAN;
@@ -205,7 +206,7 @@ public class AnalisadorSintatico {
             }
             case "@ADD_VAR" -> {
                 // O token do identificador foi o último consumido
-                simbolo = new Simbolo(tokenAnterior.getToken(),
+                simbolo = new Simbolo(tokenAnterior.getLexema(),
                         ultimoTipoDeclarado, tokenAnterior.getLinha(), 
                         tokenAnterior.getColunaInicial());
                 if(!tabelaDeSimbolos.inserir(simbolo)){

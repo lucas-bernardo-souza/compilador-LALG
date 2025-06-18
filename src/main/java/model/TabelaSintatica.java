@@ -245,8 +245,8 @@ public final class TabelaSintatica {
         producoes.put(")", "ε");
         producoes.put("end", "ε");
         producoes.put("else", "ε");
-        producoes.put("=", "<relacao> <expressao_simples>");
-        producoes.put("<>", "<relacao> <expressao_simples>");
+        producoes.put("=", "<relacao> @CHECK_RELATIONAL_OP <expressao_simples>");
+        producoes.put("<>", "<relacao> @CHECK_RELATIONAL_OP <expressao_simples>");
         producoes.put("<", "<relacao> <expressao_simples>");
         producoes.put("<=", "<relacao> <expressao_simples>");
         producoes.put(">", "<relacao> <expressao_simples>");
@@ -416,7 +416,7 @@ public final class TabelaSintatica {
         producoes.put(";", "sinc");
         producoes.put("procedure", "sinc");
         producoes.put("begin", "sinc");
-        producoes.put("IDENTIFICADOR", "<identificador> @PUSH_TYPE_ID");
+        producoes.put("IDENTIFICADOR", "<identificador> @PUSH_ID_TYPE");
         producoes.put(",", "sinc");
         producoes.put("(", "( <expressao> )");
         producoes.put(")", "sinc");
@@ -424,7 +424,7 @@ public final class TabelaSintatica {
         producoes.put("else", "sinc");
         producoes.put("+", "sinc");
         producoes.put("-", "sinc");
-        producoes.put("NUMERO_INTEIRO", "<numero>");
+        producoes.put("NUMERO_INTEIRO", "<numero> @PUSH_INT_TYPE");
         producoes.put("not", "not <fator>");
         producoes.put("=", "sinc");
         producoes.put("<>", "sinc");
