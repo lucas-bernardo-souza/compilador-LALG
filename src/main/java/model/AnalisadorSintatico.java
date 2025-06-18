@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -189,6 +190,12 @@ public class AnalisadorSintatico {
         TipoDado tipo1, tipo2;
         
         switch(acao){
+            case "@ADD_PROCEDURE" -> {
+                simbolo = new Simbolo(tokenAnterior.getLexema(), TipoDado.PROCEDIMENTO, "void");
+                if(!tabelaDeSimbolos.inserir(simbolo)){
+                    listaErros.add(new Erro("Erro Semântico", "Semântica", "Identificador '" + tokenAnterior.getLexema() + "' já declarado neste escopo.", tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                }
+            }
             // Ações de escopo e declaração
             case "@BEGIN_SCOPE" ->{
                 tabelaDeSimbolos.entrarEscopo();
@@ -215,7 +222,7 @@ public class AnalisadorSintatico {
                             "Variável duplicada",
                             "Semântica",
                             "Variável '" + tokenAnterior.getLexema() +
-                                    "' não declarada", 
+                                    "' já declarada neste escopo", 
                             tokenAnterior.getLinha(),
                             tokenAnterior.getColunaInicial()
                     ));
@@ -232,80 +239,133 @@ public class AnalisadorSintatico {
                                     "' não declarado.", tokenAnterior.getLinha(),
                             tokenAnterior.getColunaInicial()
                     ));
+                    // Adiciona o tipo ERRO no topo da pilha
                     pilhaDeTipos.push(TipoDado.ERRO); 
                 } else {
+                    // Adiciona o tipo de dado no topo da pilha
                     pilhaDeTipos.push(simbolo.getTipoDado());
                 }
             }
             case "@PUSH_INT_TYPE" -> {
+                // Adiciona o tipo de dado int no topo da pilha
                 pilhaDeTipos.push(TipoDado.INT);
             }
             case "@PUSH_BOOL_TYPE" -> {
-                pilhaDeTipos.push(TipoDado.BOOLEAN);
+                // Adciona o tipo de dado boolean no topo da pilha
+                simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getLexema());
+                pilhaDeTipos.push(simbolo.getTipoDado());
             }
             // Ações de verificação de operadores
             case "@CHECK_ARITHMETIC_OP" -> {
-                tipo1 = pilhaDeTipos.pop();
-                tipo2 = pilhaDeTipos.pop();
-                if(!(tipo1 == TipoDado.INT) || !(tipo2 == TipoDado.INT)){
-                    listaErros.add(new Erro(
-                            "",
-                            "Semantíca",
-                            "Tipos incompatíveis para operação aritimética. Esperado: (int, int),"
-                                    + "Encontrado: ("+tipo1.getNome() + ", "+ tipo2.getNome() + ").",
-                            tokenAnterior.getLinha(),
-                            tokenAnterior.getColunaInicial()
-                    ));
-                    pilhaDeTipos.push(TipoDado.ERRO);
-                } else {
-                    pilhaDeTipos.push(TipoDado.INT);
+                try {
+                    // Remove dois tipos do topo da pilha
+                    tipo1 = pilhaDeTipos.pop();
+                    tipo2 = pilhaDeTipos.pop();
+                    if(!(tipo1 == TipoDado.INT) || !(tipo2 == TipoDado.INT)){
+                        listaErros.add(new Erro(
+                                "",
+                                "Semantíca",
+                                "Tipos incompatíveis para operação aritimética. Esperado: (int, int),"
+                                        + "Encontrado: ("+tipo1.getNome() + ", "+ tipo2.getNome() + ").",
+                                tokenAnterior.getLinha(),
+                                tokenAnterior.getColunaInicial()
+                        ));
+                        // Adiciona o tipo Erro no topo da pilha
+                        pilhaDeTipos.push(TipoDado.ERRO);
+                    } else {
+                        // Adiciona o tipo inteiro no topo da pilha
+                        pilhaDeTipos.push(TipoDado.INT);
+                    }
+                } catch(EmptyStackException e){
+                    System.err.println("@CHECK_ARITHMETIC_OP - A pilha de tipos se encontra vazia!");
                 }
             }
             case "@CHECK_LOGICAL_OP" -> {
-                tipo1 = pilhaDeTipos.pop();
-                tipo2 = pilhaDeTipos.pop();
-                
-                if(!(tipo1 == TipoDado.BOOLEAN) || !(tipo2 == TipoDado.BOOLEAN)){
-                    listaErros.add(new Erro(
-                            "",
-                            "Semântica",
-                            "Tipos incompatíveis para operações lógicas. Esperado:"
-                                    + " (boolean, boolean), Encontrado: (" +
-                                    tipo2.getNome() + ", " + tipo1.getNome() +
-                                    ").",
-                            tokenAnterior.getLinha(),
-                            tokenAnterior.getColunaInicial()
-                    ));
-                    pilhaDeTipos.push(TipoDado.ERRO);
-                } else {
-                    pilhaDeTipos.push(TipoDado.BOOLEAN);
-                }
+                try {
+                    // Remove dois tipos da pilha
+                    tipo1 = pilhaDeTipos.pop();
+                    tipo2 = pilhaDeTipos.pop();
+
+                    if(!(tipo1 == TipoDado.BOOLEAN) || !(tipo2 == TipoDado.BOOLEAN)){
+                        listaErros.add(new Erro(
+                                "",
+                                "Semântica",
+                                "Tipos incompatíveis para operações lógicas. Esperado:"
+                                        + " (boolean, boolean), Encontrado: (" +
+                                        tipo2.getNome() + ", " + tipo1.getNome() +
+                                        ").",
+                                tokenAnterior.getLinha(),
+                                tokenAnterior.getColunaInicial()
+                        ));
+                        // Adiciona o tipo Erro ao topo da pilha
+                        pilhaDeTipos.push(TipoDado.ERRO);
+                    } else {
+                        // Adiciona o tipo boolean no topo da pilha
+                        pilhaDeTipos.push(TipoDado.BOOLEAN);
+                    }
+                } catch(EmptyStackException e){
+                    System.err.println("@CHECK_LOGICAL_OP - A pilha de tipos se encontra vazia!");
+                } 
             }
             case "@CHECK_RELATIONAL_OP" -> {
-                tipo1 = pilhaDeTipos.pop();
-                tipo2 = pilhaDeTipos.pop();
-                if(!(tipo1.equals(tipo2)) || tipo1 == TipoDado.ERRO){
-                    listaErros.add(new Erro(
-                            "",
-                            "Semântica",
-                            "Tipos incompatíveis para operação relacional: " + 
-                                    tipo2.getNome() + " e " + tipo1.getNome() + ".",
-                            tokenAnterior.getLinha(),
-                            tokenAnterior.getColunaInicial()
-                    ));
-                    pilhaDeTipos.push(TipoDado.ERRO);
-                } else {
-                    pilhaDeTipos.push(TipoDado.BOOLEAN);
+                try{
+                    // remove dois tipos da pilha
+                    tipo1 = pilhaDeTipos.pop();
+                    tipo2 = pilhaDeTipos.pop();
+                    // Verifica se os dois tipos da relação são iguais se não for temos um erro
+                    if(!(tipo1.equals(tipo2)) || tipo1 == TipoDado.ERRO){
+                        listaErros.add(new Erro(
+                                "",
+                                "Semântica",
+                                "Tipos incompatíveis para operação relacional: " + 
+                                        tipo2.getNome() + " e " + tipo1.getNome() + ".",
+                                tokenAnterior.getLinha(),
+                                tokenAnterior.getColunaInicial()
+                        ));
+                        // Adciona o tipo erro no topo da pilha
+                        pilhaDeTipos.push(TipoDado.ERRO);
+                    } else {
+                        // Adiciona o tipo boolean no topo da pilha
+                        pilhaDeTipos.push(TipoDado.BOOLEAN);
+                    }
+                } catch(EmptyStackException e){
+                    System.err.println("@CHECK_RELATIONAL_OP - A pilha de tipos se encontra vazia!");
+                }              
+            }
+            case "@CHECK_NOT" -> {
+                try {
+                    tipo1 = pilhaDeTipos.pop();
+                    if(!(tipo1 == TipoDado.BOOLEAN)){
+                        listaErros.add(new Erro("Erro Semântico", "Semântica", "Operador 'not' só pode ser aplicado a expressões booleanas.", tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                        pilhaDeTipos.push(TipoDado.ERRO);
+                    } else {
+                        pilhaDeTipos.push(TipoDado.BOOLEAN);
+                    }
+                } catch(EmptyStackException e){
+                    System.err.println("@CHECK_NOT - A pilha de tipos se encontra vazia!");
                 }
             }
             case "@CHECK_ASSIGN" -> {
-                tipo2 = pilhaDeTipos.pop(); // Tipo da expressão (lado direito)
-                tipo1 = pilhaDeTipos.pop(); // Tipo da variável (lado esquerdo)
-                 if (!tipo1.equals(tipo2)) {
+                try{
+                    tipo2 = pilhaDeTipos.pop(); // Tipo da expressão (lado direito)
+                    tipo1 = pilhaDeTipos.pop(); // Tipo da variável (lado esquerdo)
+                    if (!tipo1.equals(tipo2)) {
                      listaErros.add(new Erro("", "Semântica", "Atribuição de tipo incompatível. Não é possível atribuir '" + tipo2 + "' a uma variável do tipo '" + tipo1 + "'.", tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
-                 }
+                    }
+                } catch(EmptyStackException e) {
+                    System.err.println("@CHECK_ASSIGN - A pilha de tipos se encontra vazia!");
+                }
             }
-            
+            case "@CHECK_CONDITION" -> {
+                try{
+                    tipo1 = pilhaDeTipos.pop();
+                    if(!(tipo1 == TipoDado.BOOLEAN)){
+                        listaErros.add(new Erro("Erro Semântico", "Semântica", "A expressão em um comando condicional ou repetitivo deve ser booleana.", tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                    }
+                } catch(EmptyStackException e){
+                    System.err.println("@CHECK_CONDITION - A pilha de tipos se encontra vazia!");
+                }
+            }
         }
     }
     private boolean isTerminal(String simbolo) {

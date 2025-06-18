@@ -13,6 +13,7 @@ public final class TipoDado {
     public static final TipoDado BOOLEAN = new TipoDado("boolean");
     public static final TipoDado VOID = new TipoDado("void");
     public static final TipoDado ERRO = new TipoDado("erro");
+    public static final TipoDado PROCEDIMENTO = new TipoDado("procedimento");
     
     private final String nome;
     
@@ -25,7 +26,7 @@ public final class TipoDado {
     }
     
     public static TipoDado[] values(){
-        return new TipoDado[] {INT, BOOLEAN, VOID, ERRO};
+        return new TipoDado[] {INT, BOOLEAN, VOID, ERRO, PROCEDIMENTO};
     }
     
     public static TipoDado fromString(String nome) {

@@ -18,6 +18,7 @@ public class Simbolo {
     private List<Simbolo> parametros; // lista de parâmetros de procedimentos
     private int linhaDeclaracao;
     private int colunaDeclaracao;
+    private String retorno;
     
     // Contrutor para variáveis
     public Simbolo(String nome, TipoDado tipo, int linha, int coluna){
@@ -36,7 +37,17 @@ public class Simbolo {
         this.escopo = escopo;
         this.categoria = TipoSimbolo.PROCEDIMENTO;
     }
+    
+    public Simbolo(String nome, TipoDado tipo, String retorno){
+        this.nome = nome;
+        this.tipoDado = tipo;
+        this.retorno = retorno;
+    }
 
+    public String getRetorno(){
+        return retorno;
+    }
+    
     public String getNome() {
         return nome;
     }

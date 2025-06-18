@@ -21,7 +21,7 @@ public final class TabelaSintatica {
 
         // <programa> ::= program <identificador> ; <bloco>
         producoes = new HashMap<>();
-        producoes.put("program", "program <identificador> ; <bloco>");
+        producoes.put("program", "program <identificador> @ADD_PROGRAM ; <bloco> @END_SCOPE");
         producoes.put("$", "sinc");
         tabela.put("<programa>", producoes);
 
@@ -82,7 +82,7 @@ public final class TabelaSintatica {
 
         // <declaração_de_procedimento> ::= procedure <identificador> [ <parâmetros formais> ] ; <bloco>
         producoes = new HashMap<>();
-        producoes.put("procedure", "procedure <identificador> <parametros_formais_opcional> ; <bloco>");
+        producoes.put("procedure", "procedure <identificador> @ADD_PROCEDURE @BEGIN_SCOPE <parametros_formais_opcional> ; <bloco> @END_SCOPE");
         tabela.put("<declaração_de_procedimento>", producoes);
 
         // <parametros_formais_opcional> ::= ε | ( <seção de parâmetros formais> { ; <seção de parâmetros formais> } )
@@ -101,7 +101,7 @@ public final class TabelaSintatica {
         // <seção_de_parâmetros_formais> ::= [var] <lista_de_identificadores> : <identificador>
         producoes = new HashMap<>();
         producoes.put("var", "var <lista_de_identificadores> : <tipo>");
-        producoes.put("IDENTIFICADOR", "<lista_de_identificadores> : <tipo>");
+        producoes.put("IDENTIFICADOR", "<lista_de_identificadores> @ADD_PARAM : <tipo>");
         tabela.put("<seção_de_parâmetros_formais>", producoes);
 
         // <lista_de_identificadores> ::= <identificador> { , <identificador> }
@@ -111,7 +111,7 @@ public final class TabelaSintatica {
 
         // <lista_de_identificadores'> ::= ε | , <identificador> <lista_de_identificadores'>
         producoes = new HashMap<>();
-        producoes.put(",", ", <identificador> <lista_de_identificadores'>");
+        producoes.put(",", ", <identificador> @ADD_VAR <lista_de_identificadores'>");
         producoes.put(":", "ε");
         producoes.put(";", "ε");
         tabela.put("<lista_de_identificadores'>", producoes);
@@ -136,7 +136,7 @@ public final class TabelaSintatica {
         producoes.put("begin", "<comando_composto>");
         producoes.put(";", "sinc");
         producoes.put("procedure", "sinc");
-        producoes.put("IDENTIFICADOR", "<identificador> <comando'>");
+        producoes.put("IDENTIFICADOR", "<identificador> @PUSH_ID_TYPE <comando'>");
         producoes.put("end", "sinc");
         producoes.put("else", "sinc");
         producoes.put("$", "sinc");
@@ -194,7 +194,7 @@ public final class TabelaSintatica {
         producoes.put("end", "sinc");
         producoes.put("else", "sinc");
         producoes.put("$", "sinc");
-        producoes.put("if", "if <expressao> then <comando> <else>");
+        producoes.put("if", "if <expressao> @CHECK_CONDITION then <comando> <else>");
         tabela.put("<comando_condicional_1>", producoes);
 
         // <else>
@@ -217,7 +217,7 @@ public final class TabelaSintatica {
         producoes.put("end", "sinc");
         producoes.put("else", "sinc");
         producoes.put("$", "sinc");
-        producoes.put("while", "while <expressao> do <comando>");
+        producoes.put("while", "while <expressao> @CHECK_CONDITION do <comando>");
         tabela.put("<comando_repetitivo_1>", producoes);
 
         //<expressao>
@@ -245,9 +245,9 @@ public final class TabelaSintatica {
         producoes.put(")", "ε");
         producoes.put("end", "ε");
         producoes.put("else", "ε");
-        producoes.put("=", "<relacao> @CHECK_RELATIONAL_OP <expressao_simples>");
-        producoes.put("<>", "<relacao> @CHECK_RELATIONAL_OP <expressao_simples>");
-        producoes.put("<", "<relacao> <expressao_simples>");
+        producoes.put("=", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
+        producoes.put("<>", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
+        producoes.put("<", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
         producoes.put("<=", "<relacao> <expressao_simples>");
         producoes.put(">", "<relacao> <expressao_simples>");
         producoes.put(">=", "<relacao> <expressao_simples>");
@@ -322,8 +322,8 @@ public final class TabelaSintatica {
         producoes.put(")", "ε");
         producoes.put("end", "ε");
         producoes.put("else", "ε");
-        producoes.put("+", "<op2> <termo> <expressao_simples'>");
-        producoes.put("-", "<op2> <termo> <expressao_simples'>");
+        producoes.put("+", "<op2> <termo> @CHECK_ARITHMETIC_OP <expressao_simples'>");
+        producoes.put("-", "<op2> <termo> @CHECK_ARITHMETIC_OP <expressao_simples'>");
         producoes.put("=", "ε");
         producoes.put("<>", "ε");
         producoes.put("<", "ε");
@@ -332,7 +332,7 @@ public final class TabelaSintatica {
         producoes.put(">", "ε");
         producoes.put("then", "ε");
         producoes.put("do", "ε");
-        producoes.put("or", "<op2> <termo> <expressao_simples'>");
+        producoes.put("or", "<op2> <termo> @CHECK_LOGICAL_OP <expressao_simples'>");
         tabela.put("<expressao_simples'>", producoes);
 
         //<op2>
@@ -394,9 +394,9 @@ public final class TabelaSintatica {
         producoes.put("then", "ε");
         producoes.put("do", "ε");
         producoes.put("or", "ε");
-        producoes.put("*", "<op3> <fator> <termo'>");
-        producoes.put("div", "<op3> <fator> <termo'>");
-        producoes.put("and", "<op3> <fator> <termo'>");
+        producoes.put("*", "<op3> <fator> @CHECK_ARITHMETIC_OP <termo'>");
+        producoes.put("div", "<op3> <fator> @CHECK_ARITHMETIC_OP <termo'>");
+        producoes.put("and", "<op3> <fator> @CHECK_LOGICAL_OP <termo'>");
         tabela.put("<termo'>", producoes);
 
         // <op3>
@@ -425,7 +425,7 @@ public final class TabelaSintatica {
         producoes.put("+", "sinc");
         producoes.put("-", "sinc");
         producoes.put("NUMERO_INTEIRO", "<numero> @PUSH_INT_TYPE");
-        producoes.put("not", "not <fator>");
+        producoes.put("not", "not <fator> @CHECK_NOT");
         producoes.put("=", "sinc");
         producoes.put("<>", "sinc");
         producoes.put("<", "sinc");
