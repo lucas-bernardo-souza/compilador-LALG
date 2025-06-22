@@ -50,13 +50,13 @@ public class AnalisadorSintatico {
     public void analisar() {
         pilha.push("$");
         pilha.push("<programa>");
-
         Token lookahead = tokens.get(ponteiro);
 
         while (!pilha.isEmpty()) {
             String topo = pilha.peek();
             // Guarda o token anterior para dar contexto às açõe semânticas
             tokenAnterior = (ponteiro > 0 && ponteiro <= tokens.size()) ? tokens.get(ponteiro -1):null;
+            
             if(topo.startsWith("@")){
                 pilha.pop();
                 executarAcaoSemantica(topo); // Executa ação
@@ -138,9 +138,14 @@ public class AnalisadorSintatico {
                         ponteiro++;
                         // incrementa até o lexema que realiza a sincronização
                         while(!tokens.get(ponteiro).getLexema().equals(";")){
+                            if(ponteiro < tokens.size()){
+                                break;
+                            }
                             ponteiro++;
                         }
+                        
                         if (ponteiro < tokens.size()) {
+                            
                             lookahead = tokens.get(ponteiro);
                         } else {
                             lookahead = new Token("$", "$", 0, 0, 0);
@@ -230,7 +235,9 @@ public class AnalisadorSintatico {
             }
             // Ações de verificação de tipos em expressões
             case "@PUSH_ID_TYPE" -> {
+                // busca a variável na tabela de símbolos
                 simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getLexema());
+                // Caso não for encontrado a variável não foi declarada
                 if(simbolo == null){
                     listaErros.add(new Erro(
                             "",
@@ -349,7 +356,7 @@ public class AnalisadorSintatico {
                 try{
                     tipo2 = pilhaDeTipos.pop(); // Tipo da expressão (lado direito)
                     tipo1 = pilhaDeTipos.pop(); // Tipo da variável (lado esquerdo)
-                    if (!tipo1.equals(tipo2)) {
+                    if (tipo1 != TipoDado.ERRO && tipo2 != TipoDado.ERRO && !tipo1.equals(tipo2)) {
                      listaErros.add(new Erro("", "Semântica", "Atribuição de tipo incompatível. Não é possível atribuir '" + tipo2 + "' a uma variável do tipo '" + tipo1 + "'.", tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
                     }
                 } catch(EmptyStackException e) {
