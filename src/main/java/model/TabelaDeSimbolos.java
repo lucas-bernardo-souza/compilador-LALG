@@ -50,4 +50,13 @@ public class TabelaDeSimbolos {
         }
         return null; // Erro: Identificador não declarado
     }
+    
+    public Simbolo buscarNoEscopoAtual(String nome) {
+    if (!pilhaDeEscopos.isEmpty()) {
+        Map<String, Simbolo> escopoAtual = pilhaDeEscopos.peek();
+        return escopoAtual.getOrDefault(nome, null);
+    }
+    return null;
+}
+
 }
