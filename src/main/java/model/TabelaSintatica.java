@@ -138,7 +138,6 @@ public final class TabelaSintatica {
         producoes.put("procedure", "sinc");
         producoes.put("IDENTIFICADOR", "<identificador> @PUSH_ID_TYPE <comando'>");
         producoes.put("end", "sinc");
-        producoes.put("else", "sinc");
         producoes.put("$", "sinc");
         producoes.put("if", "<comando_condicional_1>");
         producoes.put("while", "<comando_repetitivo_1>");
@@ -153,9 +152,8 @@ public final class TabelaSintatica {
         producoes.put("procedure", "sinc");
         producoes.put("(", "<chamada_de_procedimento>");
         producoes.put("end", "sinc");
-        producoes.put("else", "sinc");
         producoes.put("$", "sinc");
-        producoes.put(":=", "<atribuicao>");
+        producoes.put(":=", "@STORE_VAR := <expressao> @CHECK_ASSIGN");
         tabela.put("<comando'>", producoes);
         
         producoes = new HashMap<>();
@@ -248,9 +246,9 @@ public final class TabelaSintatica {
         producoes.put("=", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
         producoes.put("<>", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
         producoes.put("<", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
-        producoes.put("<=", "<relacao> <expressao_simples>");
-        producoes.put(">", "<relacao> <expressao_simples>");
-        producoes.put(">=", "<relacao> <expressao_simples>");
+        producoes.put("<=", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
+        producoes.put(">", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
+        producoes.put(">=", "<relacao> <expressao_simples> @CHECK_RELATIONAL_OP");
         producoes.put("then", "ε");
         producoes.put("do", "ε");
         tabela.put("<expressao'>", producoes);
@@ -314,16 +312,13 @@ public final class TabelaSintatica {
 
         //<expressao_simples'>
         producoes = new HashMap<>();
-        producoes.put(".", "ε");
         producoes.put(";", "ε");
-        producoes.put("procedure", "ε");
-        producoes.put("begin", "ε");
-        producoes.put(",", "ε");
         producoes.put(")", "ε");
         producoes.put("end", "ε");
         producoes.put("else", "ε");
-        producoes.put("+", "<op2> <termo> @CHECK_ARITHMETIC_OP <expressao_simples'>");
-        producoes.put("-", "<op2> <termo> @CHECK_ARITHMETIC_OP <expressao_simples'>");
+        producoes.put("+", "+ <termo> @CHECK_ARITHMETIC_OP <expressao_simples'>");
+        producoes.put("-", "- <termo> @CHECK_ARITHMETIC_OP <expressao_simples'>");
+        producoes.put("or", "or <termo> @CHECK_ARITHMETIC_OP <expressao_simples'>");
         producoes.put("=", "ε");
         producoes.put("<>", "ε");
         producoes.put("<", "ε");
@@ -332,7 +327,6 @@ public final class TabelaSintatica {
         producoes.put(">", "ε");
         producoes.put("then", "ε");
         producoes.put("do", "ε");
-        producoes.put("or", "<op2> <termo> @CHECK_LOGICAL_OP <expressao_simples'>");
         tabela.put("<expressao_simples'>", producoes);
 
         //<op2>
@@ -410,7 +404,7 @@ public final class TabelaSintatica {
         producoes.put("and", "and");
         tabela.put("<op3>", producoes);
 
-        //<fator>
+        //<fator> ::= <identificador> | <numero> | ( <expressao> ) | not <fator>
         producoes = new HashMap<>();
         producoes.put(".", "sinc");
         producoes.put(";", "sinc");
