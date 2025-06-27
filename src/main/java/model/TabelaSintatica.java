@@ -157,12 +157,12 @@ public final class TabelaSintatica {
         tabela.put("<comando'>", producoes);
         
         producoes = new HashMap<>();
-        producoes.put("write", "write <chamada_de_procedimento>");
+        producoes.put("write", "write ( <lista_de_expressoes> ) @CHECK_WRITE_ARGS");
         producoes.put("$", "sinc");
         tabela.put("<comando_escrita>", producoes);
         
         producoes = new HashMap<>();
-        producoes.put("read", "read <chamada_de_procedimento>");
+        producoes.put("read", "read ( <lista_de_expressoes> ) @CHECK_READ_ARGS");
         producoes.put("$", "sinc");
         tabela.put("<comando_leitura>", producoes);
 

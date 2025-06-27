@@ -11,6 +11,7 @@ import java.util.List;
  * @author Bernardo
  */
 public class Simbolo {
+
     private String nome; // identificador do símbolo (x, calculaMedia)
     private TipoSimbolo categoria; // programa, variavel ou procedimento
     private TipoDado tipoDado; // int ou boolean
@@ -19,35 +20,44 @@ public class Simbolo {
     private int linhaDeclaracao;
     private int colunaDeclaracao;
     private String retorno;
-    
+    private boolean usada = false;
+
     // Contrutor para variáveis
-    public Simbolo(String nome, TipoDado tipo, int linha, int coluna){
+    public Simbolo(String nome, TipoDado tipo, int linha, int coluna) {
         this.nome = nome;
         this.tipoDado = tipo;
-        
+        this.categoria = TipoSimbolo.VARIAVEL;
         this.linhaDeclaracao = linha;
         this.colunaDeclaracao = coluna;
     }
-    
+
+    public void marcarComoUsada() {
+        this.usada = true;
+    }
+
+    public boolean foiUsada() {
+        return usada;
+    }
+
     // Construtir para procedimentos
-    public Simbolo(String nome, TipoDado retorno, List<Simbolo> params, int escopo){
+    public Simbolo(String nome, TipoDado retorno, List<Simbolo> params, int escopo) {
         this.nome = nome;
         this.tipoDado = retorno;
         this.parametros = params;
         this.escopo = escopo;
         this.categoria = TipoSimbolo.PROCEDIMENTO;
     }
-    
-    public Simbolo(String nome, TipoDado tipo, String retorno){
+
+    public Simbolo(String nome, TipoDado tipo, String retorno) {
         this.nome = nome;
         this.tipoDado = tipo;
         this.retorno = retorno;
     }
 
-    public String getRetorno(){
+    public String getRetorno() {
         return retorno;
     }
-    
+
     public String getNome() {
         return nome;
     }
@@ -75,8 +85,8 @@ public class Simbolo {
     public int getColunaDeclaracao() {
         return colunaDeclaracao;
     }
-    
-    public void setEscopo(int nivel){
+
+    public void setEscopo(int nivel) {
         this.escopo = nivel;
     }
 }
