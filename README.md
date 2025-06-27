@@ -1,7 +1,6 @@
 # 🔍 Analisador Léxico, Sintático e Semântico para a Linguagem LALG
 
-Este projeto implementa um **analisador léxico**, **analisador sintático preditivo LL(1)** e uma **análise semântica completa** para a linguagem fictícia **LALG**. O sistema realiza validações desde a tokenização até regras de escopo, tipo e uso de variáveis.
-
+Este projeto é um compilador para a linguagem LALG, desenvolvido como parte da disciplina de Compiladores do curso de Ciência da Computação da UNESP - Presidente Prudente. Ele realiza análise léxica, sintática e semântica, detectando erros em código-fonte e fornecendo mensagens claras e contextualizadas. O compilador foi implementado em Java e segue os princípios de um analisador preditivo LL(1).
 
 ## 📁 Estrutura do Projeto
 
