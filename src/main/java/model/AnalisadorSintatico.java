@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -17,13 +18,19 @@ public class AnalisadorSintatico {
     private int ponteiro = 0;
     private final List<PassoSintatico> passos = new ArrayList<>();
     private final List<Erro> listaErros = new ArrayList<>();
+    // Analise semantica
+    private final TabelaDeSimbolos tabelaDeSimbolos = new TabelaDeSimbolos();
+    private final Stack<TipoDado> pilhaDeTipos = new Stack<>(); // Para checagem de tipos em expressões
+    private TipoDado ultimoTipoDeclarado; // Guarda o tipo (int/boolean) ao declarar vars
+    private Token tokenAnterior; // Guarda o último token consumido
+    private Token variavelAtribuida; // Armazena a variável do lado esquerdo da atribuição
 
     public AnalisadorSintatico(List<Token> tokens, TabelaSintatica tabelaSintatica) {
         this.tokens = tokens;
         this.tabela = tabelaSintatica.tabela;
     }
-    
-    public AnalisadorSintatico(TabelaSintatica tabelaSintatica){
+
+    public AnalisadorSintatico(TabelaSintatica tabelaSintatica) {
         this.tabela = tabelaSintatica.tabela;
         this.tokens = new ArrayList<>();
     }
@@ -35,21 +42,25 @@ public class AnalisadorSintatico {
     public List<Erro> getListaErros() {
         return listaErros;
     }
-    
-    public Map<String, Map<String, String>> getTabela(){
+
+    public Map<String, Map<String, String>> getTabela() {
         return tabela;
     }
 
     public void analisar() {
         pilha.push("$");
         pilha.push("<programa>");
-
         Token lookahead = tokens.get(ponteiro);
 
         while (!pilha.isEmpty()) {
             String topo = pilha.peek();
+            // Guarda o token anterior para dar contexto às açõe semânticas
+            tokenAnterior = (ponteiro > 0 && ponteiro <= tokens.size()) ? tokens.get(ponteiro - 1) : null;
 
-            if (isTerminal(topo) || topo.equals("$")) {
+            if (topo.startsWith("@")) {
+                pilha.pop();
+                executarAcaoSemantica(topo); // Executa ação
+            } else if (isTerminal(topo) || topo.equals("$")) {
                 if (topo.equals(lookahead.getLexema())) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
                     pilha.pop();
@@ -81,7 +92,7 @@ public class AnalisadorSintatico {
                     } else {
                         lookahead = new Token("$", "$", 0, 0, 0);
                     }
-                } else if(topo.equals("<numero>") && lookahead.getToken().equals("NUMERO_INTEIRO")) {
+                } else if (topo.equals("<numero>") && lookahead.getToken().equals("NUMERO_INTEIRO")) {
                     passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Consome token"));
                     pilha.pop();
                     ponteiro++;
@@ -123,13 +134,18 @@ public class AnalisadorSintatico {
                         );
                         listaErros.add(erro);
                         passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Erro: Símbolo inesperado: '" + lookahead.getLexema() + "' . Símbolo(s) esperado(s): " + producoes.keySet() + "."));
-                        
+
                         ponteiro++;
                         // incrementa até o lexema que realiza a sincronização
-                        while(!tokens.get(ponteiro).getLexema().equals(";")){
+                        while (!tokens.get(ponteiro).getLexema().equals(";")) {
+                            if (ponteiro < tokens.size()) {
+                                break;
+                            }
                             ponteiro++;
                         }
+
                         if (ponteiro < tokens.size()) {
+
                             lookahead = tokens.get(ponteiro);
                         } else {
                             lookahead = new Token("$", "$", 0, 0, 0);
@@ -162,9 +178,7 @@ public class AnalisadorSintatico {
                     }
                 }
             }
-
         }
-        
 
         if (listaErros.isEmpty()) {
             passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Análise sintática finalisada com sucesso!"));
@@ -173,6 +187,215 @@ public class AnalisadorSintatico {
             passos.add(new PassoSintatico(pilhaString(), lookahead.getLexema() + " (" + lookahead.getToken() + ")", "Análise sintática finalizada com " + listaErros.size() + " erro(s)."));
         }
     }
+
+private void executarAcaoSemantica(String acao) {
+    Simbolo simbolo;
+    TipoDado tipo1, tipo2;
+
+    switch (acao) {
+        case "@ADD_PROCEDURE" -> {
+            simbolo = new Simbolo(tokenAnterior.getLexema(), TipoDado.PROCEDIMENTO, "void");
+            if (!tabelaDeSimbolos.inserir(simbolo)) {
+                listaErros.add(new Erro("Erro Semântico", "Semântica",
+                        "Identificador '" + tokenAnterior.getLexema() + "' já declarado neste escopo.",
+                        tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+            }
+        }
+
+        case "@BEGIN_SCOPE" -> tabelaDeSimbolos.entrarEscopo();
+
+        case "@END_SCOPE" -> {
+            for (Simbolo s : tabelaDeSimbolos.getEscopoAtual()) {
+                if (s.getCategoria() == TipoSimbolo.VARIAVEL && !s.foiUsada()) {
+                    listaErros.add(new Erro("Variável não utilizada", "Semântica",
+                            "A variável '" + s.getNome() + "' foi declarada mas nunca usada.",
+                            s.getLinhaDeclaracao(), s.getColunaDeclaracao()));
+                }
+            }
+            tabelaDeSimbolos.sairEscopo();
+        }
+
+        case "@CHECK_READ_ARGS", "@CHECK_WRITE_ARGS" -> {
+            if (pilhaDeTipos.isEmpty()) {
+                listaErros.add(new Erro("Chamada sem argumentos", "Semântica",
+                        "A chamada de '" + (acao.contains("READ") ? "read" : "write") + "' está vazia e exige ao menos um argumento.",
+                        tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+            }
+            tabelaDeSimbolos.marcarSimboloComoUsado(tokenAnterior.getLexema());
+            pilhaDeTipos.clear(); // Limpa após leitura/impressão
+        }
+
+        case "@SET_TYPE" -> {
+            if (tokenAnterior.getLexema().equals("int")) {
+                ultimoTipoDeclarado = TipoDado.INT;
+            } else if (tokenAnterior.getLexema().equals("boolean")) {
+                ultimoTipoDeclarado = TipoDado.BOOLEAN;
+            } else {
+                listaErros.add(new Erro("Tipo inválido", "Semântica",
+                        "Tipo '" + tokenAnterior.getLexema() + "' não reconhecido.",
+                        tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                ultimoTipoDeclarado = TipoDado.ERRO;
+            }
+        }
+
+        case "@ADD_VAR" -> {
+            simbolo = new Simbolo(tokenAnterior.getLexema(), ultimoTipoDeclarado,
+                    tokenAnterior.getLinha(), tokenAnterior.getColunaInicial());
+            Simbolo existente = tabelaDeSimbolos.buscarNoEscopoAtual(tokenAnterior.getLexema());
+            if (existente != null) {
+                listaErros.add(new Erro("Variável duplicada", "Semântica",
+                        "A variável '" + tokenAnterior.getLexema() + "' já foi declarada neste escopo.",
+                        tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+            } else {
+                tabelaDeSimbolos.inserir(simbolo);
+            }
+        }
+
+        case "@STORE_VAR" -> {
+            variavelAtribuida = tokenAnterior;
+            simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getLexema());
+            tabelaDeSimbolos.marcarSimboloComoUsado(tokenAnterior.getLexema());
+        }
+
+        case "@PUSH_ID_TYPE", "@PUSH_BOOL_TYPE" -> {
+            simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getLexema());
+            if (simbolo == null) {
+                listaErros.add(new Erro("Identificador não declarado", "Semântica",
+                        "Identificador '" + tokenAnterior.getLexema() + "' não declarado.",
+                        tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                pilhaDeTipos.push(TipoDado.ERRO);
+            } else {
+                tabelaDeSimbolos.marcarSimboloComoUsado(tokenAnterior.getLexema());
+                pilhaDeTipos.push(simbolo.getTipoDado());
+            }
+        }
+
+        case "@PUSH_INT_TYPE" -> pilhaDeTipos.push(TipoDado.INT);
+
+        case "@CHECK_ARITHMETIC_OP" -> {
+            try {
+                tipo1 = pilhaDeTipos.pop();
+                tipo2 = pilhaDeTipos.pop();
+                if (tipo1 != TipoDado.INT || tipo2 != TipoDado.INT) {
+                    listaErros.add(new Erro("", "Semântica",
+                            "Tipos incompatíveis para operação aritmética. Esperado: (int, int), Encontrado: ("
+                            + tipo2.getNome() + ", " + tipo1.getNome() + ").",
+                            tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else {
+                    pilhaDeTipos.push(TipoDado.INT);
+                }
+            } catch (EmptyStackException e) {
+                System.err.println("@CHECK_ARITHMETIC_OP - Pilha de tipos vazia!");
+            }
+        }
+
+        case "@CHECK_LOGICAL_OP" -> {
+            try {
+                tipo1 = pilhaDeTipos.pop();
+                tipo2 = pilhaDeTipos.pop();
+                if (tipo1 != TipoDado.BOOLEAN || tipo2 != TipoDado.BOOLEAN) {
+                    listaErros.add(new Erro("", "Semântica",
+                            "Tipos incompatíveis para operação lógica. Esperado: (boolean, boolean), Encontrado: ("
+                            + tipo2.getNome() + ", " + tipo1.getNome() + ").",
+                            tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else {
+                    pilhaDeTipos.push(TipoDado.BOOLEAN);
+                }
+            } catch (EmptyStackException e) {
+                System.err.println("@CHECK_LOGICAL_OP - Pilha de tipos vazia!");
+            }
+        }
+
+        case "@CHECK_RELATIONAL_OP" -> {
+            try {
+                tipo1 = pilhaDeTipos.pop();
+                tipo2 = pilhaDeTipos.pop();
+                if (tipo1 == TipoDado.ERRO || tipo2 == TipoDado.ERRO) {
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else if (!tipo1.equals(tipo2)) {
+                    listaErros.add(new Erro("Tipos incompatíveis", "Semântica",
+                            "Operação relacional entre '" + tipo2 + "' e '" + tipo1 + "' inválida.",
+                            tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else {
+                    pilhaDeTipos.push(TipoDado.BOOLEAN);
+                }
+                pilhaDeTipos.clear(); // ← Limpando após uso
+            } catch (EmptyStackException e) {
+                System.err.println("@CHECK_RELATIONAL_OP - Pilha de tipos vazia!");
+            }
+        }
+
+        case "@CHECK_NOT" -> {
+            try {
+                tipo1 = pilhaDeTipos.pop();
+                if (tipo1 != TipoDado.BOOLEAN) {
+                    listaErros.add(new Erro("Erro Semântico", "Semântica",
+                            "Operador 'not' só pode ser aplicado a booleanos.",
+                            tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                    pilhaDeTipos.push(TipoDado.ERRO);
+                } else {
+                    pilhaDeTipos.push(TipoDado.BOOLEAN);
+                }
+            } catch (EmptyStackException e) {
+                System.err.println("@CHECK_NOT - Pilha de tipos vazia!");
+            }
+        }
+
+        case "@CHECK_ASSIGN" -> {
+            tipo2 = pilhaDeTipos.pop(); // expressão
+            Simbolo var = tabelaDeSimbolos.buscar(variavelAtribuida.getLexema());
+            tipo1 = (var != null) ? var.getTipoDado() : TipoDado.ERRO;
+
+            if (tipo1 == TipoDado.ERRO || tipo2 == TipoDado.ERRO) {
+                pilhaDeTipos.push(TipoDado.ERRO);
+            } else if (!tipo1.equals(tipo2)) {
+                listaErros.add(new Erro("Atribuição inválida", "Semântica",
+                        "Não é possível atribuir '" + tipo2 + "' a variável do tipo '" + tipo1 + "'.",
+                        tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                pilhaDeTipos.push(TipoDado.ERRO);
+            } else {
+                pilhaDeTipos.push(tipo1);
+            }
+            pilhaDeTipos.clear(); // ← Limpando após atribuição
+        }
+
+        case "@CHECK_CONDITION" -> {
+            try {
+                tipo1 = pilhaDeTipos.pop();
+                if (tipo1 != TipoDado.BOOLEAN) {
+                    listaErros.add(new Erro("Condição inválida", "Semântica",
+                            "Expressão de controle deve ser booleana. Encontrado: '" + tipo1.getNome() + "'.",
+                            tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                }
+            } catch (EmptyStackException e) {
+                System.err.println("@CHECK_CONDITION - Pilha de tipos vazia!");
+            } finally {
+                pilhaDeTipos.clear(); // ← sempre limpar após condicional
+            }
+        }
+
+        case "@CHECK_RETURN" -> {
+            try {
+                tipo1 = pilhaDeTipos.pop();
+                if (!tipo1.equals(ultimoTipoDeclarado)) {
+                    listaErros.add(new Erro("Tipo de retorno inválido", "Semântica",
+                            "Tipo de retorno '" + tipo1 + "' não corresponde ao declarado '" + ultimoTipoDeclarado + "'.",
+                            tokenAnterior.getLinha(), tokenAnterior.getColunaInicial()));
+                }
+            } catch (EmptyStackException e) {
+                System.err.println("@CHECK_RETURN - Pilha de tipos vazia!");
+            } finally {
+                pilhaDeTipos.clear(); // ← sempre limpar após retorno
+            }
+        }
+
+       
+    }
+}
+
 
     private boolean isTerminal(String simbolo) {
         if (!simbolo.equals("<>") && !simbolo.equals("<")) {
